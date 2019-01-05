@@ -1,0 +1,387 @@
+﻿<!DOCTYPE html>
+<html lang = "ro">
+	<head>
+		<title>Functionalitatea aplicatiei</title>
+		
+		<meta charset="UTF-8">
+		<meta name="description" content = "Functionalitatea aplicatiei de Programare Vizuala">
+		<meta name="keywords" content = "
+										 Programare,Cod,Invata sa programezi,Programare pentru copii,
+										 Programare Vizuala,Visual Programming,Game Development,Creeaza jocuri,
+										 Jocuri pentru copii,Blocuri de cod,Joculete,Caractere,Pixel Art,
+										 Caractere pixelate,16-bit,8-bit,spritesheet
+										 ">
+  		<meta name="author" content = "Vlad Andrei">
+		<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+		
+		<link rel="icon" href="media/favicon.png" type="image/png">
+		<link href = "css/general.css" type = "text/css" rel = "stylesheet"/>
+		<link href = "css/code_blocks.css" type = "text/css" rel = "stylesheet"/>
+		<link href = "css/functionalitate.css" type = "text/css" rel = "stylesheet"/>
+		
+		<script src = "js/functionalitate.js"></script>
+	</head>
+	<body onload = "addTds()">
+		<!--ACELASI HEADER SI MENIU CA PE PAGINA PRINCIPALA-->
+		<header>
+			<div id = "logo">
+				Coder
+				<div class = "code_block">
+					<span class = "pointy_brackets">&lt;</span>Blox<span class = "pointy_brackets">&gt;</span>
+				</div>
+			</div>
+			<h1>Programare Vizuala</h1>
+		</header>
+		<nav>
+			<ul>
+				<li>
+					<a href = "index.html">
+						<img src = "media/icons/home.png" alt = "H">
+						<span class = "textmenu">Acasa</span>
+					</a>
+				</li>
+				<li>
+					<a href = "functionalitate.html">
+						<img src = "media/icons/functionality.png" alt = "H">
+						<span class = "textmenu">Backstage</span>
+					</a>
+				</li>
+				<li>
+					<a href = "app.html">
+						<img src = "media/icons/game.png" alt = "H">
+						<span class = "textmenu">App</span>
+					</a>
+				</li>
+				<li>
+					<a href = "about.html">
+						<img src = "media/icons/contact.png" alt = "H">
+						<span class = "textmenu">About</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		
+		<main>
+			<section id = "code_blocks_presentation">
+				<h2>Prezentarea blocurilor de cod</h2>
+				<table>
+					<caption>Mai jos avem functionalitatea codului prezent in aplicatie:</caption>
+					<thead>
+						<tr>
+							<th>Categorie</th>
+							<th>Denumire</th>
+							<th>Bloc de cod</th>
+							<th>Functionalitate</th>
+							<th>Blocuri continute</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class = "LoopsTable">STRUCTURI REPETITIVE</td>
+							<td>
+								Loop
+							</td>
+							<td>
+								<div class = "code_block loop">
+
+									<span class = "code_statement">Repeta de</span>
+									<input class = "loop_input" 
+										   type = "number" min = "0" max = "1000" value = "5"/>
+									<span class = "code_statement">ori</span>
+
+									<div class = "empty"></div>
+								</div>
+							</td>
+							<td>
+								O structura repetitiva ce se executa de un nr. dat de ori
+							</td>
+							<td>
+								<ol>
+									<li>Alt Loop</li>
+									<li>Actiuni</li>
+									<li>Conditionale</li>
+									<li>Stop</li>
+								</ol>
+							</td>
+						</tr>
+
+						<tr>
+							<td rowspan = "2" class = "ConditionalsTable">CONDITIONALE</td>
+							<td>
+								Conditionala
+							</td>
+							<td>
+								<div class = "code_block conditional if">
+									<span class = "code_statement">Daca</span>
+									<div class = "code_block expression empty_expression"></div>
+									<span class = "code_statement">atunci</span>
+
+									<div class = "empty"></div>
+								</div>
+							</td>
+							<td>
+								O structura ce accepta o expresie si in functie de evaluarea expresiei<br/>
+								executa sau nu codul continut
+							</td>
+							<td>
+								<ul>
+									<li>in head: 
+										<ol>
+											<li>Expresii</li>
+										</ol>		
+									</li>
+									<li>
+										in body:
+										<ol>
+											<li>Loops</li>
+											<li>Actiuni</li>
+											<li>Conditionale</li>
+										</ol>
+									</li>
+								</ul>
+							</td>
+						</tr>	
+						<tr class = "ExtraTD">
+							<td>
+								Conditionala cu Else
+							</td>
+							<td>
+								<div class = "code_block ifelse_conditional">
+									<div class = "code_block conditional if">
+										<span class = "code_statement">Daca</span>
+										<div class = "code_block expression empty_expression"></div>
+										<span class = "code_statement">atunci</span>
+
+										<div class = "empty"></div>
+									</div>
+									<div class = "code_block conditional else">
+										<span class = "code_statement">Altfel</span>
+
+										<div class = "empty"></div>
+									</div>
+								</div>
+							</td>
+							<td>
+								O structura ce accepta o expresie si in functie de evaluarea expresiei
+								executa primul bloc de cod (true) sau al doilea bloc de cod (false)
+							</td>
+							<td>
+								La fel ca la conditionala
+							</td>
+						</tr>
+						<tr>
+							<td rowspan = "2" class = "EventsTable">EVENIMENTE</td>
+							<td>
+								Inceputul Jocului
+							</td>
+							<td>
+								<div class = "code_block event begin_game">
+									<span class = "code_statement">La inceputul jocului</span>
+								</div>
+							</td>
+							<td>
+								Acest eveniment se "declanseaza" la inceputul jocului ruland
+								blocul de cod de sub el
+							</td>
+							<td>
+								<ol>
+									<li>Loops</li>
+									<li>Actiuni</li>
+									<li>Conditionale</li>
+								</ol>
+							</td>
+						</tr>	
+						<tr class = "ExtraTD">
+							<td>
+								La apasarea butonului
+							</td>
+							<td>
+								<div class = "code_block event keypress">
+									<span class = "code_statement">La apasarea butonului</span>
+									<select name = "key">
+										<option value = "w">W</option>
+										<option value = "a">A</option>
+										<option value = "s">S</option>
+										<option value = "d">D</option>
+										<option value = "arrowup">&uarr;</option>
+										<option value = "arrowdown">&darr;</option>
+										<option value = "arrowleft">&larr;</option>
+										<option value = "arrowright">&rarr;</option>
+									</select>
+								</div>
+							</td>
+							<td>
+								Acest eveniment se "declanseaza" la apasarea unui buton ales de programator
+							</td>
+							<td>
+								<ol>
+									<li>Loops</li>
+									<li>Actiuni</li>
+									<li>Conditionale</li>
+								</ol>
+							</td>
+						</tr>
+						<tr>
+							<td rowspan = "3" class = "ActionsTable">ACTIUNI</td>
+							<td>
+								Schimba directia
+							</td>
+							<td>
+								<div class = "code_block action direction">
+									<span class = "code_statement">Uita-te in</span>
+									<select name = "direction">
+										<option value = "stanga">stanga</option>
+										<option value = "dreapta">dreapta</option>
+										<option value = "sus">sus</option>
+										<option value = "jos">jos</option>
+									</select>
+								</div>
+							</td>
+							<td>
+								Executarea blocului rezulta in schimbarea directiei
+							</td>
+							<td>
+								-
+							</td>
+						</tr>
+						<tr class = "ExtraTD">
+							<td>
+								Mergi spre...pasi
+							</td>
+							<td>
+								<div class = "code_block action movement">
+									<span class = "code_statement">Mergi spre</span>
+									<select name = "direction">
+										<option value = "stanga">stanga</option>
+										<option value = "dreapta">dreapta</option>
+										<option value = "sus">sus</option>
+										<option value = "jos">jos</option>
+									</select>
+									<input class = "no_steps" 
+										   type = "number" min = "0" max = "1000" value = "10"/>
+									<span class = "code_statement">pasi</span>
+								</div>
+							</td>
+							<td>
+								Executarea blocului rezulta in deplasarea caracterului un nr.
+								de pasi setati de programator inspre o directie presetata
+							</td>
+							<td>
+								-
+							</td>
+						</tr>		
+						<tr class = "ExtraTD">
+							<td>
+								Spune
+							</td>
+							<td>
+								<div class = "code_block action talking">
+									<span class = "code_statement">Spune</span>
+									<input class = "speech" 
+										   type = "text" maxlength = "1000" value = "Saloot!"/>
+								</div>
+							</td>
+							<td>
+								Executarea blocului va afisa un speech box deasupra caracterului
+								si va afisa mesajul transmis in bloc.
+							</td>
+							<td>
+								-
+							</td>
+						</tr>	
+						<tr>
+							<td class = "ExpressionsTable">EXPRESII</td>
+							<td>
+								Comparatie
+							</td>
+							<td>
+								<div class = "code_block expression">
+									<select name = "left_operand">
+										<option value = "posX">posX</option>
+										<option value = "posY">posY</option>
+										<option value = "left-border">ecran-st</option>
+										<option value = "right-border">ecran-dp</option>
+										<option value = "top-border">ecran-sus</option>
+										<option value = "bottom-border">ecran-jos</option>
+									</select>
+									<select name = "operator">
+										<option value = ">">&gt;</option>
+										<option value = "<">&lt;</option>
+										<option value = "<=">&leq;</option>
+										<option value = ">=">&ge;</option>
+									</select>
+									<select name = "right_operand">
+										<option value = "posX">posX</option>
+										<option value = "posY">posY</option>
+										<option value = "left-border">ecran-st</option>
+										<option value = "right-border">ecran-dp</option>
+										<option value = "top-border">ecran-sus</option>
+										<option value = "bottom-border">ecran-jos</option>
+									</select>
+								</div>
+							</td>
+							<td>
+								Aceasta expresie contine un operator si doi operanzi, operanzii reprezentand variabile ce contin valori,
+								iar operatorul unul dintre operatorii de comparatie matematica. Daca expresia matematica este adevarata
+								atunci ea va rezulta in valoarea <em>true</em>, altfel valoarea <em>false</em>.
+							</td>
+							<td>
+								-
+							</td>
+						</tr>
+						<tr>
+							<td class = "StopTable">STOP</td>
+							<td>
+								Stop
+							</td>
+							<td>
+								<div class = "code_block stop">
+									<span class = "code_statement">Stop</span>
+								</div>
+							</td>
+							<td>
+								Executarea blocului rezulta in oprirea executiei codului curent.<br/>
+								<strong>Atentie! <em>Niciun bloc de cod dupa stop nu se va mai executa.</em></strong>
+							</td>
+							<td>
+								-
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+
+			<section id = "chars_presentation">
+				<h2>Prezentarea caracterelor</h2>
+				<div id = "wrap_chars">
+					<div id = "john">
+						<figure>
+							<img src = "media/APP/charas/jon.gif" alt = "John a luat o pauza de filmari">
+							<figcaption>JOHN</figcaption>
+						</figure>
+						<p>John este un actor vesel gata sa accepte orice "rol" veti elabora cu ajutorul blocurilor de cod.</p>
+					</div>
+					<div id = "johnny">
+						<figure>
+							<img src = "media/APP/charas/jony.gif" alt = "Johnny a luat o pauza de filmari">
+							<figcaption>JOHNNY</figcaption>
+						</figure>
+						<p>Johnny este fratele mai mic al lui John.</p>
+					</div>
+				</div>
+			</section>
+		</main>
+		
+		<footer>
+			<aside>
+				<div>
+					<p id = "title">Coder&lt;Blox&gt; &#169; 2018.</p>
+					<p>Pentru detalii: </p>
+					<a href = "mailto:andrei.vladlt@gmail.com">andrei.vladlt@gmail.com</a>	
+					<hr/>
+				</div>
+				<a id = "back_top" href = "#">Back Top</a>
+			</aside>
+		</footer>
+	</body>
+</html>

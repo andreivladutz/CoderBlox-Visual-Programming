@@ -1,0 +1,179 @@
+/*stilul general pentru orice bloc de cod*/
+div.code_block {
+	position : relative;
+	display : inline-block;
+	width : 12.5rem;
+	
+	text-align : center;
+	
+	border-radius : 5%;
+	box-shadow : 2px 2px 1px rgb(192,192,192);
+	
+	/*overflow : hidden;*/
+}
+
+/*orice text continut in blocurile de cod*/
+span.code_statement {
+	position : relative;
+	
+	display : inline-block;
+	padding : 0.625rem;
+	color : white;
+}
+
+/*textul din inputuri(for-loops si actiuni)*/
+input {
+	font-size : 1rem;
+}
+
+/*textul din selectii(event-uri, actiuni si expresii)*/
+select {
+	font-size : 1rem;
+}
+
+/*stil mai specific pt input-ul din loops*/
+input.loop_input {
+	display : inline-block;
+	border-radius : 20%;
+	width : 2rem;
+	
+	background-color : rgb(77, 182, 130);
+	color : white;
+}
+
+/*
+*stilul pentru dummy div(ofera look-ul de bloc de cod fara continut)
+*fara el blocurile de cod cu continut vor avea aspect de dreptunghi
+*background-color-ul va trebui schimbat dinamic in functie de
+*background-ul blocului de cod (altfel nu va mai avea aspect de gol)
+*/
+div.empty {
+	position : relative;
+	left : 2%;
+	bottom : 0;
+
+	border-radius : 5%;
+	/* trebuie afisata onmouseover
+	box-shadow : 2px 2px 2px yellow inset;
+	*/
+	
+	background-color : white;
+	height : 1.25rem;
+	width : 100%;
+}
+
+/*loops*/
+div.loop {
+	background-color : rgb(101, 224, 163);
+	border-left : rgb(101, 224, 163) solid 10px;
+	border-bottom : rgb(101, 224, 163) solid 10px;
+}
+
+
+/*conditionale*/
+div.conditional {
+	
+	/* Fac update la width in functie de lungimea expresiei
+		din conditionala (dinamic cu js)
+	width : auto;
+	*/
+	background-color : rgb(216, 216, 59);
+	border-left : rgb(216, 216, 59) solid 10px;
+	border-bottom : rgb(216, 216, 59) solid 10px;
+}
+
+
+/*expresii*/
+div.expression {
+	width : auto;
+	height : auto;
+	border-radius : 5% 10%;
+	/* trebuie afisata onmouseover
+	box-shadow : 2px 2px 2px yellow inset;
+	*/
+	
+	background-color : rgb(219, 112, 4);
+}
+
+div.expression>select {
+	display : inline-block;
+	margin : 0.3125rem;
+	
+	background-color : rgb(210, 112, 4);
+}
+
+div.expression>select:nth-child(2) {
+	margin : 0;
+}
+
+/*dummy div*/
+div.empty_expression {
+	width : 3.125rem;
+	height : 1.25rem;
+	border-radius : 5% 10%;
+	/* trebuie afisata onmouseover
+	box-shadow : 2px 2px 2px yellow inset;
+	*/
+	
+	vertical-align : middle;
+}
+
+/*unesc if-ul cu else-ul eliminand colturile rotunde dintre ele*/
+div.ifelse_conditional>.if {
+	border-bottom-left-radius : 0px;
+	border-bottom-right-radius : 0px;
+}
+
+/*unesc if-ul cu else-ul eliminand colturile rotunde dintre ele*/
+div.ifelse_conditional>.else {
+	border-top-left-radius : 0px;
+	border-top-right-radius : 0px;
+}
+
+/*evenimente*/
+div.event {
+	background-color : deepskyblue;
+}
+
+div.event.keypress {
+	width : auto;
+	padding-left : 0.625rem;
+	padding-right : 0.625rem;
+}
+
+div.event.keypress>select {
+	background-color : dodgerblue;
+	color : white;
+}
+
+/*div-ul stop*/
+div.stop {
+	width : auto;
+	height : auto;
+	background-color : red;
+	border-bottom-right-radius : 40%;
+}
+
+/*actiuni*/
+div.action {
+	background-color : mediumpurple;
+}
+
+div.action>input, div.action>select {
+	background-color : rebeccapurple;
+	color : white;
+}
+
+/*blocul de micare*/
+div.action.movement input {
+	width : 15%;
+}
+
+div.action.movement {
+	width : 17.5rem;
+}
+
+div.action.talking input  {
+	margin-right : 5%;
+	width : 60%;
+}

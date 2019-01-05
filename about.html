@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang = "ro">
+	<head>
+		<title>About</title>
+		
+		<meta charset="UTF-8">
+		<meta name="description" content = "Despre Aplicatie">
+		<meta name="keywords" content = "Despre, Despre autor,Misiunea aplicatiei,Scop,Descrierea aplicatiei,Descriere,Credits
+										 Programare,Cod,Invata sa programezi,Programare pentru copii,
+										 Programare Vizuala,Visual Programming,Game Development,Creeaza jocuri, Jocuri pentru copii">
+  		<meta name="author" content = "Vlad Andrei">
+		<meta name="viewport" content = "width=device-width, initial-scale=1.0">
+		
+		<link rel="icon" href="media/favicon.png" type="image/png">
+		<link href = "css/general.css" type = "text/css" rel = "stylesheet"/>
+		<link href = "css/code_blocks.css" type = "text/css" rel = "stylesheet"/>
+		<link href = "css/about.css" type = "text/css" rel = "stylesheet"/>
+		
+		<script src = "js/about.js"></script>
+	</head>
+	<body onload = "setListeners()">
+		<header>
+			<div id = "logo">
+				Coder
+				<div class = "code_block">
+					<span class = "pointy_brackets">&lt;</span>Blox<span class = "pointy_brackets">&gt;</span>
+				</div>
+			</div>
+			<h1>Programare Vizuala</h1>
+		</header>
+		<nav>
+			<ul>
+				<li>
+					<a href = "index.html">
+						<img src = "media/icons/home.png" alt = "H">
+						<span class = "textmenu">Acasa</span>
+					</a>
+				</li>
+				<li>
+					<a href = "functionalitate.html">
+						<img src = "media/icons/functionality.png" alt = "F">
+						<span class = "textmenu">Backstage</span>
+					</a>
+				</li>
+				<li>
+					<a href = "app.html">
+						<img src = "media/icons/game.png" alt = "G">
+						<span class = "textmenu">App</span>
+					</a>
+				</li>
+				<li>
+					<a href = "about.html">
+						<img src = "media/icons/contact.png" alt = "A">
+						<span class = "textmenu">About</span>
+					</a>
+				</li>
+			</ul>
+		</nav>
+		
+		<main>
+			<nav id = "about-nav">
+				<div id = "hamburger-icon"></div>
+				<ul>
+					<li><a href = "#about-mission">Misiunea Aplicatiei</a></li>
+					<li><a href = "#about-author">Despre Autor</a></li>
+					<li><a href = "#credits">Credits</a></li>
+				</ul>
+			</nav>
+
+			<section id = "about-mission">
+				<div class = "heading-wrapper">
+					<div class = "speech-box"><h2>Misiunea Aplicatiei</h2></div>
+				</div>
+				<div class = "text-wrap">
+					<p>
+						Aceasta aplicatie este un proiect web pentru facultate cu rol demonstrativ si educativ. Pentru scopuri didactice puteti folosi o
+						aplicatie mult mai matura precum <a href = "https://scratch.mit.edu/projects/editor/?tip_bar=getStarted">Scratch</a>.
+					</p>
+					<p>
+						CoderBlox prezinta anumite functionalitati de baza ale programarii, precum o structura repetitiva simpla ("pentru") si o structura de control ("daca" / "daca...atunci"), dar "ascunde" si niste concepte mai avansate precum <i>event listeners</i> (apasare de taste) si <i>custom event listeners</i> ("la inceputul jocului"). Astfel putem construi de la cel mai de baza program (<em>"Hello World"</em>)
+						cat si deplasarea unui obiect pe ecran (un caracter) cu verificarea unor conditii, etc.
+					</p>
+				</div>
+
+				<div id = "video-container">
+					<div id = "video-overlay">
+						<h3>Video de prezentare</h3>
+					</div>
+					<video id = "presentation-video" controls>
+						<source src = "media/about_page/app-video.webm" type = "video/webm">
+						<source src = "media/about_page/app-video.mp4" type = "video/mp4">
+						Browserul dvs. nu suporta video-uri.
+					</video>
+				</div>
+			</section>
+
+			<section id = "about-author">
+				<div class = "heading-wrapper">
+					<div class = "speech-box"><h2>Despre Autor</h2></div>
+				</div>
+
+				<div class = "text-wrap">
+					<p>
+						Sunt student in anul doi la Facultatea de Matematica si Informatica si urmez un curs de Tehnici Web,
+						 curs pentru care este realizat acest proiect.
+					</p>
+					<p>
+						Ma pasioneaza programarea si game development-ul si sunt interesat in special de locul unde acestea doua se intalnesc
+						sub HTML5.
+					</p>
+					<p>
+						De ce HTML5? Este o solutie cross-platform, iar aplicatiile pot fi cu usurinta convertite in aplicatii native
+						pentru Android, iOS, etc. 
+					</p>
+				</div>
+				<div id = "details">
+					<p>
+						Pentru detalii sau probleme de copyright contactati-ma pe <br/>
+						<a id = "email" href = "emailto:andrei.vladlt@gmail.com">andrei.vladlt@gmail.com</a>
+					</p>
+					<address>
+						<a id = "address" href = "http://www.fmi.unibuc.ro/" target = "_blank">Facultatea de Matematica si Informatica</a>, 
+						Universitatea Bucuresti,
+						Str. Academiei nr.14, sector 1, C.P. 010014, Bucuresti, Romania
+					</address>
+					<div id = "socialmedia">
+						<a id = "facebook" href = "https://www.facebook.com/andrei.vlad.94" target = "_blank"><span class = "socialtext">Facebook</span></a>
+						<br/>
+						<a id = "twitter" href = "https://twitter.com/?lang=ro" target = "_blank"><span class = "socialtext">Twitter</span></a>
+					</div>
+				</div>
+			</section>
+
+			<article>
+				<h2>Inspirational</h2>
+				<q cite = "http://subiecte.citatepedia.ro/despre.php?s=informatic%E3">
+					Programatorul este un creator de universuri pentru care doar el este responsabil. Universuri de complexitate practic nelimitata pot fi create sub forma programelor de calculator.
+				</q>
+				<cite>-Joseph Weizenbaum</cite>
+			</article>
+
+			<section id = "credits">
+				<div class = "heading-wrapper">
+					<div class = "speech-box"><h2>Giving Credits</h2></div>
+				</div>
+
+				<div id = "credits-wrapper">
+					<div class = "givecredit">
+						<a href="https://www.freepik.com/free-photos-vectors/arrow">Arrow vector created by 0melapics - Freepik.com</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/assorted-icons-set_571202.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.dafont.com/juan-casco.d2093'>Code Font</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/entertainment-concept-graphic-icons-illustration_3226236.htm'>
+							Designed by Rawpixel.com
+						</a>
+					</div>
+					<div class = "givecredit">
+						<a href="https://ro.wikipedia.org/wiki/Limbaj_de_programare_vizual%C4%83">
+							Despre Programare Vizuala. Wikipedia
+						</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/programmers-concept-with-flat-design_2456101.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/programmers-concept-with-flat-design_2741400.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/programmers-concept-with-flat-design_2456100.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/collection-of-four-post-notes-in-realistic-style_2969991.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						<a href='http://charas-project.net/charas2/index.php'>Caracterele din joc</a>
+					</div>
+					<div class = "givecredit">
+						<a href='https://www.freepik.com/free-vector/pack-of-pixelated-social-networks-icons_948596.htm'>Designed by Freepik</a>
+					</div>
+					<div class = "givecredit">
+						Icons made by <a href="https://www.flaticon.com/authors/google" title="Google">Google</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+					</div>
+				</div>
+			</section>
+		</main>
+		
+		<footer>
+			<aside>
+				<div>
+					<p id = "title">Coder&lt;Blox&gt; &#169; 2018.</p>
+					<p>Pentru detalii: </p>
+					<a href = "mailto:andrei.vladlt@gmail.com">andrei.vladlt@gmail.com</a>	
+					<hr/>
+				</div>
+				<a id = "back_top" href = "#">Back Top</a>
+			</aside>
+		</footer>
+	</body>
+</html>

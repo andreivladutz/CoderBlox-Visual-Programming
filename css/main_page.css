@@ -1,0 +1,295 @@
+/* STIL BANNER */
+div.auto_slider {
+	position : relative;
+	top : 0;
+	left : 0;
+	width : 100%;
+	height : auto;
+	overflow : hidden;
+}
+
+div.overlay {
+	position : relative;
+	top : 0;
+	left : 0;
+	width : 100%;
+	height : auto;
+	
+	opacity : 0.7;
+	animation : _overlay 12s linear infinite alternate;
+}
+
+/*titlul slide-ului*/
+div.overlay:after {
+	position : absolute;
+	left : 5%;
+	top : 60%;
+	width : 50%;
+	height : auto;
+	color : white;
+	/*simulez text-stroke*/
+	text-shadow :
+	   -1px -1px 0 #000,  
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		 1px 1px 0 #000;
+	
+	content : "";
+	
+	text-align : left;
+	font-size : 3rem;
+	font-family: "Avant Garde";
+	
+	animation : _overlay_text_title 12s linear infinite alternate;
+}
+
+
+/*continutul de text al slide-ului*/
+div.overlay:before {
+	position : absolute;
+	left : 5%;
+	top : 75%;
+	width : 50%;
+	height : auto;
+	color : white;
+	/*simulez text-stroke*/
+	text-shadow :
+	   -1px -1px 0 #000,  
+		1px -1px 0 #000,
+		-1px 1px 0 #000,
+		 1px 1px 0 #000;
+	
+	content : "";
+	
+	text-align : left;
+	font-size : 2rem;
+	font-family: "Avant Garde";
+	
+	animation : _overlay_text_content 12s linear infinite alternate;
+}
+
+@keyframes _overlay_text_content {
+	0%, 13% {
+		content : "Salveaza-ti aplicatia si arat-o prietenilor tai";
+	}
+	
+	14%, 18% {
+		content : "";
+	}
+	
+	19%, 67% {
+		content : "Invata sa codezi intr-un mod interactiv";
+	}
+	
+	68%, 72% {
+		content : "";
+	}
+	
+	73%, 100% {
+		content : "Usor si intuitiv de folosit";
+	}
+}
+
+@keyframes _overlay_text_title {
+	0%, 13% {
+		content : "Realizeaza cel mai bun joc";
+		border-bottom : 1px solid white;
+	}
+	
+	14%, 18% {
+		content : "";
+		border-bottom : none;
+	}
+	
+	19%, 67% {
+		content : "Descopera creand";
+		border-bottom : 1px solid white;
+	}
+	
+	68%, 72% {
+		content : "";
+		border-bottom : none;
+	}
+	
+	73%, 100% {
+		content : "Rezultate imediate";
+		border-bottom : 1px solid white;
+	}
+}
+
+
+@keyframes _overlay {
+	0%, 13% {
+		background-color : black;
+		opacity : 0.8;
+	}
+	
+	14%, 18% {
+		background-color : transparent;
+		opacity : 1;
+	}
+	
+	19%, 67% {
+		background-color : black;
+		opacity : 0.8;
+	}
+	
+	68%, 72% {
+		background-color : transparent;
+		opacity : 1;
+	}
+	
+	73%, 100% {
+		background-color : black;
+		opacity : 0.8;
+	}
+}
+
+ul.auto_slider_content {
+	position : relative;
+	list-style-type : none;
+	width : 100%;
+	padding-top : 30%;
+	animation : slide 12s linear infinite alternate;
+}
+
+@keyframes slide {
+	0%, 14% {
+		left : -100%;
+	}
+	
+	19%, 68% {
+		left : 0%;
+	}
+	
+	73%, 100% {
+		left : 100%;
+	}
+}
+
+ul.auto_slider_content>li {
+	position : absolute;
+	z-index : -1;
+	top : 0;
+	display : inline-block;
+	float : left;
+	width : 100%;
+	padding-top : 30%;
+	
+	
+	background-size : 100% auto;
+	background-repeat : no-repeat;
+}
+
+ul.auto_slider_content>li:nth-child(1) {
+	background-image : url("../media/banner/banner_1.jpg");
+	left : -100%;
+	
+	
+	background-position : center 65%;
+}
+
+ul.auto_slider_content>li:nth-child(2) {
+	background-image : url("../media/banner/banner_2.jpg");
+	left : 0;
+	
+	
+	background-position : center 60%;
+}
+
+ul.auto_slider_content>li:nth-child(3) {
+	background-image : url("../media/banner/banner_3.jpg");
+	left : 100%;
+	
+	
+	background-position : center ;
+}
+
+/*STIL SECTIUNEA DESCRIPTION*/
+section#description {
+	margin-top : 5%;
+}
+
+h2 {
+	display : block;
+	width : 25%;
+	margin : auto;
+	
+	font-size : 2rem;
+	border-bottom : 1px solid black;
+	text-align : center;
+}
+
+section#description div#description_container {
+	text-align : center;
+	margin : 5%;
+	margin-top : 0;
+}
+
+/* STIL SECTIUNEA BENEFITS (DIVURILE STICKY NOTES) */
+section#benefits {
+	display : flex;
+	flex-wrap : wrap;
+	justify-content : center;
+	
+	font-family : "Avant Garde";
+}
+
+section#benefits div {
+	width : 20rem;
+	height : 20rem;
+	
+	margin : 5%;
+	
+	background-size : 20rem auto;
+}
+
+section#benefits p {
+	padding : 5%;
+	text-indent : 1rem;
+}
+
+section#benefits div h3 {
+	text-align : center;
+}
+
+#one {
+	background-image : url("../media/sticky_notes/sticky1.png");
+}
+
+section#benefits #two {
+	background-image : url("../media/sticky_notes/sticky2.png");
+}
+
+section#benefits #three {
+	background-image : url("../media/sticky_notes/sticky3.png");
+}
+
+section#benefits #four {
+	background-image : url("../media/sticky_notes/sticky4.png");
+}
+
+/* acutalizez dimensiunea textului din overlay a.i. sa ramana corect formatat
+* daca dimensiunea scade sub 750px nu mai afisez textul */
+@media (max-width: 1200px) and (min-width: 900px) {
+	/*titlul banner-ului*/
+	div.overlay:after {
+		font-size : 2rem;
+	}
+	/*textul banner-ului*/
+	div.overlay:before {
+		font-size : 1rem;
+	}
+}
+
+@media (max-width: 750px){
+	div.overlay:after {
+		animation-name: none;
+		content : none;
+	}
+	
+	div.overlay:before {
+		animation-name: none;
+		content : none;
+	}
+}

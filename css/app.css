@@ -1,0 +1,254 @@
+h2 {
+	display : none;
+}
+
+html, body {
+	width : 100%;
+	height : 100%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/*STIL MENIU*/
+ul {
+	list-style-type : none;
+	padding : 0;
+	margin : 0;
+}
+/* ascund sub-listele ce contin blocurile de cod*/
+#menu>ul>li>ul {
+	position : absolute;
+	z-index : 2;
+	left : 0;
+	top : 1.5rem;
+	visibility : hidden;
+	width : auto;
+}
+
+/*spatiu intre blocurile de cod*/
+#menu>ul>li>ul>li {
+	margin-top : 2%;
+}
+
+/*primul bloc de cod nu mai este offset-uit*/
+#menu>ul>li>ul>li:first-child {
+	margin-top : 0;
+}
+
+/*meniul la randul lui va fi grid*/
+#menu {
+	display : grid;
+	grid-template-columns : auto;
+	grid-template-rows : 2% 98%;
+	grid-template-areas : "tabs" "dropdown";
+	
+	justify-items : stretch;
+	align-items : stretch;
+}
+
+#dropdown-holder {
+	grid-area : dropdown;
+}
+
+/*taburile din meniu sunt afisate cu grid*/
+#tabs {
+	grid-area : tabs;
+	
+	position : relative;
+	top : 0;
+	left : 0;
+	display : grid;
+	justify-content : stretch;
+	align-content : stretch;
+	grid-template-columns : 1fr 1fr 1fr;
+	grid-template-rows : 1fr;
+	
+	justify-items : stretch;
+	align-items : stretch;
+}
+
+/*la hover dropdown cu submeniul*/
+#tabs>li:hover ul {
+	visibility : visible;
+	transition : visibility 0.5s;
+}
+
+/*stil butoane meniu*/
+#EVENTS {
+	background-color : lightskyblue;
+}
+
+#ACTIONS {
+	background-color : purple;
+}
+
+#CODEFLOW {
+	background-color : orangered;
+}
+
+.menubuttons {
+	border : 1px solid black;
+	border-radius : 10%;
+	
+	font-family : "Avant Garde";
+	font-size : 1rem;
+}
+
+/*stil partea de game*/
+#gamebuttons-wrapper {
+	position : relative;
+	background-color : rgb(168, 168, 168);
+	width : 100%;
+	height : 100%;
+
+}
+
+/*canvas stil*/
+#mainCanvas {
+	position : absolute;
+	z-index : 2;
+	display : block;
+	bottom : 0;
+	left : 0;
+	
+	border-radius : 1%;
+}
+
+/*marimi si pozitionari butoane*/
+.gamebutton {
+	position : absolute;
+	top : 0;
+	z-index : 3;
+	
+	display : inline-block;
+	width : 2rem;
+	height : 2rem;
+	padding : 2%;
+	
+	text-align : center;
+}
+
+/*fullscreen in partea dreapta*/
+.gamebutton#fullscreenbutton {
+	right : 0;
+}
+
+/*butoanele de stop si pauza nu apar daca cel de play n-a fost apasat*/
+.gamebutton#pausebutton, .gamebutton#stopbutton {
+	display : none;
+}
+
+.gamebutton#pausebutton, .gamebutton#stopbutton, .gamebutton#startbutton {
+	left : 0;
+}
+
+.gamebutton img {
+	width : 100%;
+	height : auto;
+	
+	cursor : pointer;
+}
+
+/*general layout cu grid*/
+#app-wrapper {
+	background-color : #cdc9c9;
+	width : 100%;
+	height : 100%;
+	display : grid;
+	grid-template-rows : auto 0.3fr 0.05fr;
+	grid-template-columns : 0.5fr 1fr 1fr 1fr 1fr;
+	grid-template-areas :
+		"menu drag drag game game"
+		"menu drag drag chara chara"
+		"footer footer footer footer footer";
+	grid-column-gap : 0.8%;
+	grid-row-gap : 0.8%;
+}
+
+#menu {
+	grid-area : menu;
+	background-color : white;
+}
+
+#dragandrop-zone {
+	grid-area : drag;
+	background-color : rgb(168, 168, 168);
+}
+
+#game {
+	position : relative;
+	grid-area : game;
+}
+
+#characters {
+	grid-area : chara;
+	background-color : white;
+}
+
+/*borduri*/
+#menu, #dragandrop-zone, #characters {
+	border-radius : 1%;
+}
+
+/*caracterele adaugate(inclusiv butonul de adaugare)*/
+#added-characters>li {
+	display : inline-block;
+	padding : 2%;
+	
+	width : 2.5rem;
+	height : 2.5rem;
+}
+
+#added-characters>li img {
+	width : 100%;
+	height : auto;
+	
+	cursor : pointer;
+}
+
+/*stil FOOTER */
+footer {
+	grid-area : footer;
+	padding : 0;
+}
+
+footer #logo {
+	position : absolute;
+	left : 0;
+	font-family : "Code";
+}
+
+footer #save-progress {
+	position : relative;
+	margin : 0 auto;
+	
+	display : block;
+	width : 2rem;
+	height : 2rem;
+	padding : 0.2%;
+}
+
+footer #save-progress>img {
+	width : 100%;
+	height : auto;
+	
+	cursor : pointer;
+}
+
+/*redimensionez butoane*/
+@media screen and (max-height : 580px)
+{
+	.gamebutton {
+		width : 1.5rem;
+		height : 1.5rem;
+		padding : 1%;
+	}
+}
+
+/*miscorez textul*/
+@media screen and (max-height : 350px)
+{
+	html { font-size : 10px; }
+}

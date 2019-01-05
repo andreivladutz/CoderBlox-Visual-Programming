@@ -1,0 +1,412 @@
+body {
+	overflow-x : hidden;
+}
+
+h2 {
+	display : inline;
+	font-size : 1.4rem;
+	user-select : none;
+}
+
+/*container pentru textul din h2 astfel incat sa nu 
+* depaseasca speech box-ul din imaginea de fundal*/
+.speech-box {
+	display : inline-block;
+	text-align : center;
+}
+
+section {
+	text-align : center;
+	
+	width : 80%;
+	margin : auto;
+	margin-bottom : 5%;
+	padding : 5%;
+
+	background-color : antiquewhite;
+}
+
+/*stil continut de text*/
+.text-wrap {
+	column-count : 3;
+	text-align : justify;
+	text-indent : 2rem;
+	
+	column-rule : 0.2rem double black;
+}
+
+.text-wrap>p::first-letter {
+	font-size : 1.5rem;
+}
+
+/*stil video*/
+video {
+	position : relative;
+	top : 0; 
+	left : 0;
+	width : 100%;
+	height : 100%;
+}
+
+#video-container {
+	position : relative;
+	width : 60%;
+	height : auto;
+	
+	margin : auto;
+	margin-top : 5%;
+}
+
+#video-overlay {
+	display : block;
+	position : absolute;
+	z-index : 2;
+	top : 0;
+	left : 0;
+	width : 100%;
+	height : 100%;
+	
+	background-color : rgba(28, 22, 22, 0.43);
+	
+	text-align : center;
+	
+	transition : background-color 0.5s linear;
+}
+
+#video-overlay>h3 {
+	color : white;
+	font-family : "Avant Garde";
+	font-size : 200%;
+	
+	user-select : none;
+	visibility : visible;
+	
+	transition : visibility 0.3s linear;
+}
+
+/*clasa adaugata cu js la video-overlay*/
+#video-overlay.active-video {
+	background-color : transparent;
+}
+
+#video-overlay.active-video>h3 {
+	visibility : hidden;
+}
+
+/*micsorez padding-ul de jos la aceasta sectiune*/
+#about-mission {
+	padding-bottom : 1%;
+}
+
+/*imagini de fundal diferite pentru heading urile sectiunilor pare/impare*/
+section:nth-child(even) div.heading-wrapper {
+	background-image : url(../media/about_page/Heading1.png);
+}
+
+section:nth-child(odd) div.heading-wrapper {
+	background-image : url(../media/about_page/Heading2.png);
+}
+
+/*pozitionari diferite pentru fiecare imagine in parte*/
+section:nth-child(even) .speech-box {
+	width : 20%;
+	transform : rotate(-15deg) translate(-15%, 50%);
+	
+}
+
+section:nth-child(odd) .speech-box {
+	width : 20%;
+	transform : rotate(-15deg) translate(-15%, 50%);
+}
+
+/*wrapper-ul mare al h2-ului*/
+section div.heading-wrapper {
+	display : inline-block;
+	width : 40%;
+	height : 10rem;
+	margin-bottom : 2%;
+	
+	
+	background-repeat : no-repeat;
+	background-size : contain;
+	background-position : center;
+	
+	text-align : center;
+}
+
+/*resetez nav principal la pozitie relativa*/
+nav {
+	position : relative;
+}
+
+
+/*navigatia de pe pagina*/
+#about-nav {
+	position : relative;
+	top : 2%;
+	margin-left : 1%;
+	margin-top : 1%;
+	
+	background-color : transparent;
+	display : inline-block;
+	overflow : visible;
+}
+
+#about-nav>ul>li {
+	display : block;
+	width : 10rem;
+	margin : 0;
+	padding : 2%;
+	
+	transition-property : none;
+}
+
+#about-nav>ul>li>a {
+	font-family : "Avant Garde";
+	color : skyblue;
+	
+	transition-property : none;
+}
+
+#about-nav>ul {
+	position : absolute;
+	top : 4.5rem;
+	left : 0;
+	
+	display : none;
+	width : auto;
+	border-radius : 3%;
+	
+	background-color : #303030;
+	user-select : none;
+}
+
+/*sagetzica deasupra listei*/
+#about-nav>ul:after {
+	width : 0;
+	height : 0;
+	position : absolute;
+	top : 0%;
+	left : 1rem;
+	content:'';
+	transform:translate(0%, -100%);
+	border-left : 0.5rem solid transparent;
+	border-right : 0.5rem solid transparent;
+	border-bottom : 0.5rem solid #303030;
+}
+
+#about-nav #hamburger-icon {
+	display : inline-block;
+	width : 3.5rem;
+	height : 3.5rem;
+	border-radius : 50%;
+	
+	background-color: skyblue;
+	background-image: url(../media/about_page/hamburger.png);
+	background-size : 2rem;
+	background-position : center;
+	background-repeat : no-repeat;
+	
+	cursor : pointer;
+}
+
+#about-nav #hamburger-icon:hover {
+	background-color: darkblue;
+	box-shadow : 1px 1px black;
+}
+
+#about-nav>ul>li>a:hover{
+	top : 0;
+	color: white;
+}
+
+section a {
+	text-decoration : none;
+	color : deepskyblue;
+}
+
+/*partea de about-author*/
+#about-author a:before {
+	display : inline-block;
+	content : "";
+	width : 1rem;
+	height : 1rem;
+	margin-right : 0.1rem;
+	
+	background-size : contain;
+	background-position : bottom;
+	background-repeat : no-repeat;
+}
+
+#email:before {
+	background-image : url(../media/about_page/email.png);
+}
+
+#address:before {
+	background-image : url(../media/about_page/university.png);
+}
+
+#facebook:before {
+	background-image : url(../media/about_page/facebook.png);
+}
+
+#twitter:before {
+	background-image : url(../media/about_page/Twitter.png);
+}
+
+#facebook, #twitter {
+	vertical-align : top;
+}
+
+#socialmedia {
+	margin-top : 2rem;
+}
+
+#socialmedia a {
+	display : block;
+	font-size : 1.5rem;
+	font-family : "Avant Garde";
+}
+
+#socialmedia a:before {
+	margin-top : 0.5rem;
+	width : 2rem;
+	height : 2rem;
+}
+
+#socialmedia a:hover {
+	position : relative;
+	top : -0.5rem;
+	color: white;
+}
+
+#details {
+	column-count : 2;
+	column-gap : 2rem;
+	column-rule: 2px solid black;
+	width : 50%;
+	margin : 1rem auto;
+	
+	text-align: justify;
+}
+
+/*stil article si quote*/
+article {
+	text-align : center;
+	
+	width : 100%;
+	margin-bottom : 5%;
+	padding : 2%;
+
+	background-color : antiquewhite;
+	font-family : "Avant Garde";
+}
+
+q {
+	display : block;
+}
+
+cite {
+	display : block;
+	width : 80%;
+	text-align : right;
+}
+
+#credits-wrapper {
+	width : 90%;
+	height : auto;
+	display : grid;
+	
+	grid-template-rows : repeat(3, 1fr);
+	grid-template-columns: repeat(4, 1fr);
+	
+	grid-row-gap : 5%;
+	grid-column-gap : 5%;
+}
+
+.givecredit {
+	border : 1px dashed black;
+	border-radius : 4%;
+}
+
+/*rearanjez textul in speech boxes*/
+@media screen and (min-width : 900px) and (max-width : 1000px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-45%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 1001px) and (max-width : 1200px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-30%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 600px) and (max-width : 700px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-40%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 500px) and (max-width : 600px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-50%, 50%);
+	
+	}
+	
+	section:nth-child(odd) .speech-box {
+		transform : rotate(-15deg) translate(-25%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 350px) and (max-width : 500px) {
+	section:nth-child(odd) .speech-box {
+		transform : rotate(-15deg) translate(-60%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 300px) and (max-width : 350px) {
+	section:nth-child(odd) .speech-box {
+		transform : rotate(-15deg) translate(-100%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 400px) and (max-width : 500px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-80%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 320px) and (max-width : 400px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-100%, 50%);
+	
+	}
+}
+
+@media screen and (min-width : 300px) and (max-width : 320px) {
+	section:nth-child(even) .speech-box {
+		transform : rotate(-15deg) translate(-150%, 50%);
+	
+	}
+}
+
+/*micsorez textul din a uri*/
+@media screen and (max-width : 600px) {
+	#details a {
+		font-size : 1rem;
+	}
+	
+	#email {
+		display : block;
+		width : auto;
+		overflow : auto;
+	}
+}
