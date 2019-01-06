@@ -69,11 +69,12 @@ ul {
 	align-items : stretch;
 }
 
-/*la hover dropdown cu submeniul*/
+/*la hover dropdown cu submeniul
 #tabs>li:hover ul {
 	visibility : visible;
 	transition : visibility 0.5s;
 }
+*/
 
 /*stil butoane meniu*/
 #EVENTS {

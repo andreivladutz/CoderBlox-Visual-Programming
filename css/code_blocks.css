@@ -82,6 +82,11 @@ div.conditional {
 	border-bottom : rgb(216, 216, 59) solid 10px;
 }
 
+div.conditional.ifelse {
+	background-color : transparent;
+	border : none;
+}
+
 
 /*expresii*/
 div.expression {
@@ -119,13 +124,13 @@ div.empty_expression {
 }
 
 /*unesc if-ul cu else-ul eliminand colturile rotunde dintre ele*/
-div.ifelse_conditional>.if {
+div.conditional.ifelse>.if {
 	border-bottom-left-radius : 0px;
 	border-bottom-right-radius : 0px;
 }
 
 /*unesc if-ul cu else-ul eliminand colturile rotunde dintre ele*/
-div.ifelse_conditional>.else {
+div.conditional.ifelse>.else {
 	border-top-left-radius : 0px;
 	border-top-right-radius : 0px;
 }

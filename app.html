@@ -19,7 +19,13 @@
 		<link href = "css/code_blocks.css" type = "text/css" rel = "stylesheet"/>
 		<link href = "css/app.css" type = "text/css" rel = "stylesheet"/>
 		
-		<script src = "js/main.js"></script>
+		<script src = "js/ApplicationLogic/utils/isTouchDevice.js"></script>
+		<script src = "js/ApplicationLogic/utils/EventEmiter.js"></script>
+		<script src = "js/ApplicationLogic/utils/InputHandler.js"></script>
+		<script src = "js/ApplicationLogic/utils/ResourceLoader.js"></script>
+		<script src = "js/ApplicationLogic/CodeBlock.js"></script>
+		<script src = "js/ApplicationLogic/GameUI.js"></script>
+		<script src = "js/ApplicationLogic/main.js"></script>
 	</head>
 	<body onload = "init()">
 		<div id = "app-wrapper">
@@ -28,136 +34,15 @@
 				<ul id = "tabs">
 					<li>
 						<div id = "EVENTS" class = "menubuttons">Evenimente</div>
-						<ul>
-							<li>
-								<div class = "code_block event begin_game">
-									<span class = "code_statement">La inceputul jocului</span>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block event keypress">
-									<span class = "code_statement">La apasarea butonului</span>
-									<select name = "key">
-										<option value = "w">W</option>
-										<option value = "a">A</option>
-										<option value = "s">S</option>
-										<option value = "d">D</option>
-										<option value = "arrowup">&uarr;</option>
-										<option value = "arrowdown">&darr;</option>
-										<option value = "arrowleft">&larr;</option>
-										<option value = "arrowright">&rarr;</option>
-									</select>
-								</div>
-							</li>
-						</ul>
+						<ul id = "events_list"></ul>
 					</li>
 					<li>
 						<div id = "ACTIONS" class = "menubuttons">Actiuni</div>
-						<ul>
-							<li>
-								<div class = "code_block action direction">
-									<span class = "code_statement">Uita-te in</span>
-									<select name = "direction">
-										<option value = "stanga">stanga</option>
-										<option value = "dreapta">dreapta</option>
-										<option value = "sus">sus</option>
-										<option value = "jos">jos</option>
-									</select>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block action movement">
-									<span class = "code_statement">Mergi spre</span>
-									<select name = "direction">
-										<option value = "stanga">stanga</option>
-										<option value = "dreapta">dreapta</option>
-										<option value = "sus">sus</option>
-										<option value = "jos">jos</option>
-									</select>
-									<input class = "no_steps" 
-										   type = "number" min = "0" max = "1000" value = "10"/>
-									<span class = "code_statement">pasi</span>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block action talking">
-									<span class = "code_statement">Spune</span>
-									<input class = "speech" 
-										   type = "text" maxlength = "1000" value = "Saloot!"/>
-								</div>
-							</li>
-						</ul>
+						<ul id = "actions_list"></ul>
 					</li>
 					<li>
 						<div id = "CODEFLOW" class = "menubuttons">CodeFlow</div>
-						<ul>
-							<li>
-								<div class = "code_block loop">
-									<span class = "code_statement">Repeta de</span>
-									<input class = "loop_input" 
-										   type = "number" min = "0" max = "1000" value = "5"/>
-									<span class = "code_statement">ori</span>
-
-									<div class = "empty"></div>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block conditional if">
-									<span class = "code_statement">Daca</span>
-									<div class = "code_block expression empty_expression"></div>
-									<span class = "code_statement">atunci</span>
-
-									<div class = "empty"></div>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block ifelse_conditional">
-									<div class = "code_block conditional if">
-										<span class = "code_statement">Daca</span>
-										<div class = "code_block expression empty_expression"></div>
-										<span class = "code_statement">atunci</span>
-
-										<div class = "empty"></div>
-									</div>
-									<div class = "code_block conditional else">
-										<span class = "code_statement">Altfel</span>
-
-										<div class = "empty"></div>
-									</div>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block expression">
-									<select name = "left_operand">
-										<option value = "posX">posX</option>
-										<option value = "posY">posY</option>
-										<option value = "left-border">ecran-st</option>
-										<option value = "right-border">ecran-dp</option>
-										<option value = "top-border">ecran-sus</option>
-										<option value = "bottom-border">ecran-jos</option>
-									</select>
-									<select name = "operator">
-										<option value = ">">&gt;</option>
-										<option value = "<">&lt;</option>
-										<option value = "<=">&leq;</option>
-										<option value = ">=">&ge;</option>
-									</select>
-									<select name = "right_operand">
-										<option value = "posX">posX</option>
-										<option value = "posY">posY</option>
-										<option value = "left-border">ecran-st</option>
-										<option value = "right-border">ecran-dp</option>
-										<option value = "top-border">ecran-sus</option>
-										<option value = "bottom-border">ecran-jos</option>
-									</select>
-								</div>
-							</li>
-							<li>
-								<div class = "code_block stop">
-									<span class = "code_statement">Stop</span>
-								</div>
-							</li>
-						</ul>
+						<ul id = "codeflow_list"></ul>
 					</li>
 				</ul>
 				<div id = "dropdown-holder"></div>
@@ -183,16 +68,16 @@
 			<section id = "characters">
 				<h2>Caractere</h2>
 				<ul id = "added-characters">
-					<li id = "add-chara">
-						<img id = "myimg" src = "media/APP/buttons/add.png" alt = "add-new-chara" title = "Adauga un caracter nou">
+					<li id = "switch-chara">
+						<img id = "myimg" src = "media/APP/buttons/switch.png" alt = "switch-chara" title = "Schimba caracterul">
 					</li>
-					<li><img src = "media/APP/charas/Johnny-head.png" alt = "caracter Johnny"></li>
+					<li><img id = "chara-head" src = "media/APP/charas/Johnny-head.png" alt = "caracter Johnny"></li>
 				</ul>
 			</section>
 			
 			<footer>
 				<a href = "index.html"><span id = "logo" title = "Inapoi la pagina principala">Coder&lt;Blox&gt;</span></a>
-				<div id = "save-progress"><img src = "media/APP/buttons/save.png" alt = "save-progress" title = "Salveaza progresul"></div>
+				<div id = "save-progress"><img id = "save-progress-button" src = "media/APP/buttons/save.png" alt = "save-progress" title = "Salveaza progresul"></div>
 			</footer>
 		</div>
 	</body>

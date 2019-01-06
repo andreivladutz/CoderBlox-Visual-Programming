@@ -1,0 +1,121 @@
+<code_blocks>
+	<loop>
+		<div class = "code_block loop">
+			<span class = "code_statement">Repeta de</span>
+			<input class = "loop_input" type = "number" min = "0" max = "1000" value = "5"/>
+			<span class = "code_statement">ori</span>
+
+			<div class = "empty"></div>
+		</div>
+	</loop>
+	<conditional>
+		<div class = "code_block conditional if">
+			<span class = "code_statement">Daca</span>
+			<div class = "code_block expression empty_expression">
+			</div>
+			<span class = "code_statement">atunci</span>
+
+			<div class = "empty">
+			</div>
+		</div>
+
+		<div class = "code_block conditional ifelse">
+			<div class = "code_block conditional if">
+				<span class = "code_statement">Daca</span>
+				<div class = "code_block expression empty_expression">
+				</div>
+				<span class = "code_statement">atunci</span>
+
+				<div class = "empty">
+				</div>
+			</div>
+			<div class = "code_block conditional else">
+				<span class = "code_statement">Altfel</span>
+
+				<div class = "empty"></div>
+			</div>
+		</div>
+	</conditional>
+
+	<event>
+		<div class = "code_block event begin_game">
+			<span class = "code_statement">La inceputul jocului</span>
+		</div>
+
+		<div class = "code_block event keypress">
+			<span class = "code_statement">La apasarea butonului</span>
+			<select name = "key">
+				<option value = "w">W</option>
+				<option value = "a">A</option>
+				<option value = "s">S</option>
+				<option value = "d">D</option>
+				<option value = "arrowup">↑</option>
+				<option value = "arrowdown">↓</option>
+				<option value = "arrowleft">←</option>
+				<option value = "arrowright">→</option>
+			</select>
+		</div>
+	</event>
+
+	<action>
+		<div class = "code_block action direction">
+			<span class = "code_statement">Uita-te in</span>
+			<select name = "direction">
+				<option value = "stanga">stanga</option>
+				<option value = "dreapta">dreapta</option>
+				<option value = "sus">sus</option>
+				<option value = "jos">jos</option>
+			</select>
+		</div>
+
+		<div class = "code_block action movement">
+			<span class = "code_statement">Mergi spre</span>
+			<select name = "direction">
+				<option value = "stanga">stanga</option>
+				<option value = "dreapta">dreapta</option>
+				<option value = "sus">sus</option>
+				<option value = "jos">jos</option>
+			</select>
+			<input class = "no_steps" type = "number" min = "0" max = "1000" value = "10"/>
+			<span class = "code_statement">pasi</span>
+		</div>
+
+		<div class = "code_block action talking">
+			<span class = "code_statement">Spune</span>
+			<input class = "speech" type = "text" maxlength = "1000" value = "Saloot!"/>
+		</div>
+	</action>
+
+	<expression>
+		<div class = "code_block expression">
+			<select name = "left_operand">
+				<option value = "posX">posX</option>
+				<option value = "posY">posY</option>
+				<option value = "left-border">ecran-st</option>
+				<option value = "right-border">ecran-dp</option>
+				<option value = "top-border">ecran-sus</option>
+				<option value = "bottom-border">ecran-jos</option>
+			</select>
+			<select name = "operator">
+				<option value = ">">&gt;</option>
+				<option value = "&lt;">&lt;</option>
+				<option value = "&lt;=">&lt;=</option>
+				<option value = ">=">&gt;=</option>
+			</select>
+			<select name = "right_operand">
+				<option value = "posX">posX</option>
+				<option value = "posY">posY</option>
+				<option value = "left-border">ecran-st</option>
+				<option value = "right-border">ecran-dp</option>
+				<option value = "top-border">ecran-sus</option>
+				<option value = "bottom-border">ecran-jos</option>
+			</select>
+		</div>
+	</expression>
+
+	<stop>
+		<div class = "code_block stop">
+			<span class = "code_statement">Stop</span>
+		</div>
+	</stop>
+</code_blocks>
