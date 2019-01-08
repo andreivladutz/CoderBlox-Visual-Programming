@@ -90,7 +90,7 @@ div.conditional.ifelse {
 
 /*expresii*/
 div.expression {
-	width : auto;
+	width : 10rem;
 	height : auto;
 	border-radius : 5% 10%;
 	/* trebuie afisata onmouseover

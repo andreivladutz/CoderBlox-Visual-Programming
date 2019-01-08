@@ -1,0 +1,32 @@
+{
+	"loop" : {
+		"above" : ["loop", "conditional", "action", "event"],
+		"inside" : ["loop", "conditional", "stop", "action"],
+		"below" : ["loop", "conditional", "action", "stop"]
+	},
+	"conditional" : {
+		"above" : ["loop", "conditional", "action", "event"],
+		"inside" : ["loop", "conditional", "action"],
+		"below" : ["loop", "conditional", "action", "stop"]
+	},
+	"event" : {
+		"above" : [],
+		"inside" : [],
+		"below" : ["loop", "conditional", "action"]
+	},
+	"action" : {
+		"above" : ["loop", "conditional", "action", "event"],
+		"inside" : [],
+		"below" : ["loop", "conditional", "action", "stop"]
+	},
+	"expression" : {
+		"above" : [],
+		"inside" : [],
+		"below" : []
+	},
+	"stop" : {
+		"above" : ["loop", "conditional", "action", "event"],
+		"inside" : [],
+		"below" : []
+	}
+}

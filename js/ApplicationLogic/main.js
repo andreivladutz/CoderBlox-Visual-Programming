@@ -5,17 +5,20 @@ const RESOURCES = [
 		itemType : "img",
 		url : "media/APP/charas/Johnny.png"
 	},
-	
 	{
 		name : "John",
 		itemType : "img",
 		url : "media/APP/charas/John.png"
-	},
-		
+	},	
 	{
 		name : "CodeBlocksXML",
 		itemType : "XML",
-		url : "BLOCURI_COD.xml"
+		url : "resources/BLOCURI_COD.xml"
+	},	
+	{
+		name : "CompatibilityJSON",
+		itemType : "XML",
+		url : "resources/COMPATIBILITATE.JSON"
 	}
 	
 ];
@@ -34,10 +37,17 @@ function init() {
 	resLoad.addEventListener("loadedJohnny", function(e) { drawChara(e.detail); });
 	resLoad.addEventListener("loadedCodeBlocksXML", function(e) { gui.insertCodeBlocks(e.detail.responseXML); });
 	resLoad.addEventListener("loadedCodeBlocksXML", function() { boxCodeBlocks(); });
+	resLoad.addEventListener("loadedCompatibilityJSON", setCodeBlocksCompatibility);
 	
 	var resources = RESOURCES;
 	resLoad.add(resources);
 	resLoad.load();
+}
+
+function setCodeBlocksCompatibility(e) {
+	var xhttp = e.detail;
+	
+	CodeBlock.COMPATIBILITY_RULES = JSON.parse(xhttp.responseText);
 }
 
 /*

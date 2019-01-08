@@ -174,8 +174,10 @@ ul {
 }
 
 #dragandrop-zone {
+	position : relative;
 	grid-area : drag;
 	background-color : rgb(168, 168, 168);
+	overflow : auto;
 }
 
 #game {

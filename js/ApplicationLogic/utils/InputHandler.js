@@ -7,7 +7,7 @@ class InputHandlerBase extends EventEmiter {
 		
 		this._addDOMListeners();
 		
-		this._moveThreshold = 10;
+		this._moveThreshold = 5;
 		this._moving = false;
 		
 		this._lastCoords = null;
@@ -57,7 +57,7 @@ _p.preventDOMActions = function(e) {
 
 //daca am touchEvent iau in considerare un singur deget pe ecran
 _p.getCoords = function(e) {
-	if (e instanceof TouchEvent)
+	if (typeof TouchEvent !== "undefined" && e instanceof TouchEvent)
 		e = e.targetTouches[0];
 	
 	return {
@@ -126,6 +126,11 @@ class MouseHandler extends InputHandlerBase {
 		super(DOMEl);
 		
 		this._mouseDown = false;
+		this._pointerLeftElement = false;
+		
+		//default este sa continui miscarea cand pointerul iese din element
+		//si sa "ascult" mouseup pe body pentru a opri miscarea
+		this._stopMovingOnLeave = false;
 	}
 	
 	_handleUp(e) {
@@ -151,9 +156,45 @@ class MouseHandler extends InputHandlerBase {
 
 _p = MouseHandler.prototype;
 
-//daca nu mai am "mouse apasat" 
-_p._handleMouseLeave = function() {
-	this._mouseDown = false;
+//cer sa opresc miscarea cand pointerul iese din element
+_p.requestMovementStopOnMouseLeave = function() {
+	this._stopMovingOnLeave = true;
+}
+ 
+_p._handleMouseLeave = function(e) {
+	//ne intereseaza doar daca inca este apasat butonul de mouse
+	if (!this._mouseDown) return;
+	
+	if (this._stopMovingOnLeave) {
+		this._mouseDown = false;
+		return;
+	}
+	
+	this._pointerLeftElement = true;
+}
+
+_p._handleMouseEnter = function(e) {
+	if (this._mouseDown && this._pointerLeftElement)
+		this._pointerLeftElement = false;
+}
+
+_p._handleMouseUpOnBody = function(e) {
+	//daca vreau sa opresc miscarea cand iese pointerul nu mai execut
+	//la fel daca pointerul nu a iesit de pe element
+	if (this._stopMovingOnLeave || !this._pointerLeftElement) return;
+	
+	//miscarea se va opri(drag-ul)
+	this._handleUp(e);
+	
+	this._pointerLeftElement = false;
+};
+
+_p._handleMouseMoveOnBody = function (e) {
+	//daca vreau sa opresc miscarea cand iese pointerul nu mai execut
+	//la fel daca pointerul nu a iesit de pe element
+	if (this._stopMovingOnLeave || !this._pointerLeftElement) return;
+	
+	this._handleMove(e);
 }
 
 _p._addDOMListeners = function() {
@@ -161,8 +202,21 @@ _p._addDOMListeners = function() {
 	this._element.addEventListener("mousedown", this._handleDown.bind(this));
 	this._element.addEventListener("mousemove", this._handleMove.bind(this));
 	
-	//daca ies din element nu mai vreau sa "arunc" event-uri de movement
+	/*
+		daca ies din element ori :
+		- nu mai vreau sa "arunc" event-uri de movement
+		- vreau sa continui movement-ul tinand cont de evenimentele aruncate pe body
+	*/
 	this._element.addEventListener("mouseleave", this._handleMouseLeave.bind(this));
+	this._element.addEventListener("mouseenter", this._handleMouseEnter.bind(this));
+	
+	//body trebuie sa captureze mouseup pentru a fi siguri ca evenimentul ajunge la el
+	document.body.addEventListener("mouseup", this._handleMouseUpOnBody.bind(this), true);
+	
+	/*
+		avem optiunea de a continua movement-ul pe body
+	*/
+	document.body.addEventListener("mousemove", this._handleMouseMoveOnBody.bind(this), true);
 }
 
 class TouchHandler extends InputHandlerBase {
