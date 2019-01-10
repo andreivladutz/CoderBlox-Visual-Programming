@@ -6,7 +6,7 @@
 	},
 	"conditional" : {
 		"above" : ["loop", "conditional", "action", "event"],
-		"inside" : ["loop", "conditional", "action"],
+		"inside" : ["loop", "conditional", "action", "stop"],
 		"below" : ["loop", "conditional", "action", "stop"]
 	},
 	"event" : {

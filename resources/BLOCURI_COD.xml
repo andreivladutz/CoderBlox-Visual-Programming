@@ -44,7 +44,7 @@
 
 		<div class = "code_block event keypress">
 			<span class = "code_statement">La apasarea butonului</span>
-			<select name = "key">
+			<select class = "key" name = "key">
 				<option value = "w">W</option>
 				<option value = "a">A</option>
 				<option value = "s">S</option>
@@ -60,7 +60,7 @@
 	<action>
 		<div class = "code_block action direction">
 			<span class = "code_statement">Uita-te in</span>
-			<select name = "direction">
+			<select class = "direction" name = "direction">
 				<option value = "stanga">stanga</option>
 				<option value = "dreapta">dreapta</option>
 				<option value = "sus">sus</option>
@@ -70,7 +70,7 @@
 
 		<div class = "code_block action movement">
 			<span class = "code_statement">Mergi spre</span>
-			<select name = "direction">
+			<select class = "direction"  name = "direction">
 				<option value = "stanga">stanga</option>
 				<option value = "dreapta">dreapta</option>
 				<option value = "sus">sus</option>
@@ -88,7 +88,7 @@
 
 	<expression>
 		<div class = "code_block expression">
-			<select name = "left_operand">
+			<select class = "left_operand" name = "left_operand">
 				<option value = "posX">posX</option>
 				<option value = "posY">posY</option>
 				<option value = "left-border">ecran-st</option>
@@ -96,13 +96,13 @@
 				<option value = "top-border">ecran-sus</option>
 				<option value = "bottom-border">ecran-jos</option>
 			</select>
-			<select name = "operator">
+			<select class = "operator" name = "operator">
 				<option value = ">">&gt;</option>
 				<option value = "&lt;">&lt;</option>
 				<option value = "&lt;=">&lt;=</option>
 				<option value = ">=">&gt;=</option>
 			</select>
-			<select name = "right_operand">
+			<select class = "right_operand" name = "right_operand">
 				<option value = "posX">posX</option>
 				<option value = "posY">posY</option>
 				<option value = "left-border">ecran-st</option>

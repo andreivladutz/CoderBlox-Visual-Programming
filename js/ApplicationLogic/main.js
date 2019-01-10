@@ -19,11 +19,21 @@ const RESOURCES = [
 		name : "CompatibilityJSON",
 		itemType : "XML",
 		url : "resources/COMPATIBILITATE.JSON"
+	},	
+	{
+		name : "SelectorsJSON",
+		itemType : "XML",
+		url : "resources/SELECTORI.JSON"
 	}
-	
 ];
 
+var GAME_REFERENCE;
+
 function init() {
+	GAME_REFERENCE = new Game();
+	GAME_REFERENCE.startDebuggingCodeChain();
+	//GAME_REFERENCE.startDebuggingDragAndDrop();
+	
 	var gui = new GameUI();
 	
 	/*
@@ -38,6 +48,7 @@ function init() {
 	resLoad.addEventListener("loadedCodeBlocksXML", function(e) { gui.insertCodeBlocks(e.detail.responseXML); });
 	resLoad.addEventListener("loadedCodeBlocksXML", function() { boxCodeBlocks(); });
 	resLoad.addEventListener("loadedCompatibilityJSON", setCodeBlocksCompatibility);
+	resLoad.addEventListener("loadedSelectorsJSON", setCodeBlocksSelectors);
 	
 	var resources = RESOURCES;
 	resLoad.add(resources);
@@ -48,6 +59,12 @@ function setCodeBlocksCompatibility(e) {
 	var xhttp = e.detail;
 	
 	CodeBlock.COMPATIBILITY_RULES = JSON.parse(xhttp.responseText);
+}
+
+function setCodeBlocksSelectors(e) {
+	var xhttp = e.detail;
+	
+	CodeChain.SELECTORS = JSON.parse(xhttp.responseText);
 }
 
 /*

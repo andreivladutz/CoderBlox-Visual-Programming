@@ -207,6 +207,7 @@ _p._addDOMListeners = function() {
 		- nu mai vreau sa "arunc" event-uri de movement
 		- vreau sa continui movement-ul tinand cont de evenimentele aruncate pe body
 	*/
+	var self = this;
 	this._element.addEventListener("mouseleave", this._handleMouseLeave.bind(this));
 	this._element.addEventListener("mouseenter", this._handleMouseEnter.bind(this));
 	
