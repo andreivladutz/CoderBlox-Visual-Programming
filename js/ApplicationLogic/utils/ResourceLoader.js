@@ -3,21 +3,24 @@ class ResourceLoaderBase extends EventEmiter {
 		super();
 		this.loadedItems = 0;
 		this.totalItems = 0;
+		this.totalItemsToLoad = 0;
+		
 		this._resources = [];
+		this._resourceObjects = {};
 	}
 }
 
 _p = ResourceLoaderBase.prototype;
 
 /*
+	obj = obiectul ce va fi incarcat
 	onLoadedSetter = functia asincron ce apeleaza resolve la incarcare
 	onFailSetter = functia asincron ce apeleaza reject cu o eroare la incarcare
 	beginLoading = functia ce incepe incarcarea asincron
-	onFulfilled = functia ce este apelata cu rezultatul incarcarii(parametrul lui resolve)
-	onRejected = functia ce este apelata cu eroarea(parametrul lui reject)
 */
-_p._addItem = function(onLoadedSetter, onFailSetter, beginLoading) {
+_p._addItem = function(obj, onLoadedSetter, onFailSetter, beginLoading) {
 	this._resources.push({
+		resourceObject : obj,
 		onLoadedSetter, 
 		onFailSetter, 
 		beginLoading
@@ -27,7 +30,7 @@ _p._addItem = function(onLoadedSetter, onFailSetter, beginLoading) {
 }
 
 _p.updateProgress = function() {
-	console.log ("Loaded " + this.loadedItems + " out of " + this.totalItems);
+	console.log ("Loaded " + this.loadedItems + " out of " + this.totalItemsToLoad);
 }
 
 /*
@@ -42,10 +45,15 @@ _p.updateProgress = function() {
 */
 _p.load = function() {
 	this.loadedItems = 0;
-	
-	this.updateProgress();
+	this.totalItemsToLoad = 0;
 	
 	for (var i = 0; i < this._resources.length; i++) {
+		//daca aceasta resursa a fost incarcata deja sarim peste ea
+		if (this._resources[i].resourceObject._availableResource)
+			continue;
+		
+		this.totalItemsToLoad++;
+		
 		let currRes = this._resources[i], self = this;
 		
 		new Promise(function(resolve, reject) {
@@ -56,7 +64,7 @@ _p.load = function() {
 		}).then(
 			function fulfillment(response) {
 				//handlere apelate pt cand resursa s-a incarcat
-				response.loadedObject.available = true;
+				response.loadedObject._availableResource = true;
 				self.emit("loaded" + response.resourceName, response.loadedObject);
 				
 				 ++self.loadedItems;
@@ -75,13 +83,12 @@ _p.load = function() {
 		);		
 	}
 	
+	this.updateProgress();	
 }
 
 class ResourceLoader extends ResourceLoaderBase {
 	constructor() {
 		super();
-		
-		this._resourceObjects = {};
 	}
 }
 
@@ -92,7 +99,7 @@ _p = ResourceLoader.prototype;
 */
 _p.addImage = function(name, url) {
 	var img = this._resourceObjects[name] = new Image();
-	img.available = false;
+	img._availableResource = false;
 	
 	function onLoadedSetter(resolve) {
 		img.onload = function() {
@@ -116,7 +123,7 @@ _p.addImage = function(name, url) {
 		img.src = url;
 	}
 	
-	this._addItem(onLoadedSetter, onFailSetter, beginLoading);
+	this._addItem(img, onLoadedSetter, onFailSetter, beginLoading);
 }
 
 /*
@@ -124,7 +131,7 @@ _p.addImage = function(name, url) {
 */
 _p.addXML = function(name, url) {
 	var xhttp = this._resourceObjects[name] = new XMLHttpRequest();
-	xhttp.available = false;
+	xhttp._availableResource = false;
 	
 	function onLoadedSetter(resolve) {
 		xhttp.onreadystatechange = function() {
@@ -150,7 +157,7 @@ _p.addXML = function(name, url) {
 		xhttp.send();
 	}
 	
-	this._addItem(onLoadedSetter, onFailSetter, beginLoading);
+	this._addItem(xhttp, onLoadedSetter, onFailSetter, beginLoading);
 }
 
 /*

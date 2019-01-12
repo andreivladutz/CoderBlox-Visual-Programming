@@ -2,14 +2,16 @@ const _EVENTS_TAB_ID = "EVENTS",
 	 _ACTIONS_TAB_ID = "ACTIONS",
 	 _CODEFLOW_TAB_ID = "CODEFLOW",
 	 _SAVE_BUTTON_ID = "save-progress-button",
-	 _PLAY_BUTTON_ID = "playbutton",
+	 _PLAY_BUTTON_ID = "startbutton",
 	 _PAUSE_BUTTON_ID = "pausebutton",
 	 _STOP_BUTTON_ID = "stopbutton",
 	 _FULLSCREEN_BUTTON_ID = "fullscreenbutton",
 	 _SWITCH_BUTTON_ID = "switch-chara";
 
 class GameUI {
-	constructor() {
+	constructor(game) {
+		this.game = game;
+		
 		[	
 			this._EVENTS_TAB, 
 			this._ACTIONS_TAB, 
@@ -45,12 +47,24 @@ _p.initButtons = function() {
 	 ];
 	
 	return buttonsArr;
-}
+};
 
 _p.setListeners = function() {
 	this._EVENTS_TAB.onclick = 
 		this._ACTIONS_TAB.onclick = this._CODEFLOW_TAB.onclick = this.displayCodeBlocks.bind(this);
-}
+	
+	var self = this;
+	
+	this._PLAY_BUTTON.addEventListener("click", function() {
+		self.handlePlayButtonPress();
+		self.game.emit(GAME_START_EVENT, null);
+	});
+	
+	this._STOP_BUTTON.addEventListener("click", function() {
+		self.handleStopButtonPress();
+		self.game.emit(GAME_STOP_EVENT, null);
+	});
+};
 
 _p.initFullContainerCanvas = function(canvasId) {
 	canvas = document.getElementById(canvasId);
@@ -60,7 +74,7 @@ _p.initFullContainerCanvas = function(canvasId) {
 	window.addEventListener("resize", this.resizeCanvas.bind(this), false);
 	
 	return canvas;
-}
+};
 
 /*functia resize verifica daca canvas-ul este fullscreen sau nu
 * si modifica dimensiunile canvas-ului astfel incat sa se adapteze
@@ -75,6 +89,16 @@ _p.resizeCanvas = function(){
 	canvas.height = new_size.height;
 	
 	repaintCanvas(canvas);
+};
+
+_p.handlePlayButtonPress = function() {
+	this._PLAY_BUTTON.style.display = "none";
+	this._STOP_BUTTON.style.display = "inline-block";
+}
+
+_p.handleStopButtonPress = function() {
+	this._PLAY_BUTTON.style.display = "";
+	this._STOP_BUTTON.style.display = "";
 }
 
 _p.toggleCodeBlocksTab = function(e) {	
@@ -83,7 +107,7 @@ _p.toggleCodeBlocksTab = function(e) {
 	
 	[blocksListStyle.visibility, tabStyle.backgroundColor] = 
 		(blocksListStyle.visibility === "visible")? ["hidden", ""] : ["visible", "grey"];
-}
+};
 
 /*
 	pt tabul cu mouseover afisez nextSibling, adica lista cu blocurile de cod din acea categorie
@@ -107,7 +131,7 @@ _p.displayCodeBlocks = function(e) {
 	
 	this._TABS[mouseoverIndex].nextElementSibling.style.visibility = "visible";
 	this._TABS[mouseoverIndex].style.backgroundColor = "grey";
-}
+};
 
 /*
 	exista un singur tag cu numele categoriei care contine
@@ -123,7 +147,7 @@ GameUI.appendXMLBlocks = function(xmlDOM, categoryName, whereToAppendID) {
 		whereToAppend.appendChild(newLi);
 		newLi.innerHTML += divArr[i].outerHTML;
 	}
-}
+};
 
 // inserez blocurile de cod pe categorii in listele lor din meniu
 _p.insertCodeBlocks = function(xmlDOM){
@@ -135,4 +159,4 @@ _p.insertCodeBlocks = function(xmlDOM){
 	GameUI.appendXMLBlocks(xmlDOM, "event", "events_list");
 
 	GameUI.appendXMLBlocks(xmlDOM, "action", "actions_list");
-}
+};

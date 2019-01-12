@@ -49,10 +49,10 @@
 				<option value = "a">A</option>
 				<option value = "s">S</option>
 				<option value = "d">D</option>
-				<option value = "arrowup">↑</option>
-				<option value = "arrowdown">↓</option>
-				<option value = "arrowleft">←</option>
-				<option value = "arrowright">→</option>
+				<option value = "ArrowUp">↑</option>
+				<option value = "ArrowDown">↓</option>
+				<option value = "ArrowLeft">←</option>
+				<option value = "ArrowRight">→</option>
 			</select>
 		</div>
 	</event>

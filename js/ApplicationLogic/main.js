@@ -34,8 +34,6 @@ function init() {
 	GAME_REFERENCE.startDebuggingCodeChain();
 	//GAME_REFERENCE.startDebuggingDragAndDrop();
 	
-	var gui = new GameUI();
-	
 	/*
 	canvas.style.position = "absolute";
 	canvas.style.top = 0;
@@ -43,50 +41,6 @@ function init() {
 	document.body.appendChild(canvas);
 	*/
 	
-	var resLoad = new ResourceLoader();
-	resLoad.addEventListener("loadedJohnny", function(e) { drawChara(e.detail); });
-	resLoad.addEventListener("loadedCodeBlocksXML", function(e) { gui.insertCodeBlocks(e.detail.responseXML); });
-	resLoad.addEventListener("loadedCodeBlocksXML", function() { boxCodeBlocks(); });
-	resLoad.addEventListener("loadedCompatibilityJSON", setCodeBlocksCompatibility);
-	resLoad.addEventListener("loadedSelectorsJSON", setCodeBlocksSelectors);
-	
-	var resources = RESOURCES;
-	resLoad.add(resources);
-	resLoad.load();
-}
-
-function setCodeBlocksCompatibility(e) {
-	var xhttp = e.detail;
-	
-	CodeBlock.COMPATIBILITY_RULES = JSON.parse(xhttp.responseText);
-}
-
-function setCodeBlocksSelectors(e) {
-	var xhttp = e.detail;
-	
-	CodeChain.SELECTORS = JSON.parse(xhttp.responseText);
-}
-
-/*
-	parcurg toate listele de blocuri de cod si le wrappuiesc in obiect-ul codeblock
-	ne folosim de regexp pentru a gasi categoria din care face parte un bloc
-*/
-function boxCodeBlocks() {
-	var elem, currList, blocks, lists = ["codeflow_list", "events_list", "actions_list"],
-		regExps = [/loop/, /action/, /conditional/, /event/, /expression/, /stop/],
-		category = ["loop", "action", "conditional", "event", "expression", "stop"];
-	
-	for (var listId of lists) {
-		currList = document.getElementById(listId);
-		
-		blocks = currList.querySelectorAll("li>div.code_block");
-		
-		for (var i = 0; i < blocks.length; i++)
-			for (var j = 0; j < regExps.length; j++) {
-				if (blocks[i].className.match(regExps[j]) != null)
-					new CodeBlock(blocks[i], category[j]);
-			}
-	}
 }
 
 var ctx;
@@ -100,7 +54,7 @@ function repaintCanvas(canvas) {
 }
 
 function drawChara(character = drawChara.character) {
-	if (!character || !character.available) return;
+	if (!character || !character._availableResource) return;
 	
 	drawChara.character = character;
 	

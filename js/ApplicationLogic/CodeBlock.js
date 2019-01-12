@@ -60,6 +60,23 @@ _p._deactivate = function() {
 	this.DOMElement.parentElement.removeChild(this.DOMElement);
 }
 
+_p._removeFromCodeChainsArray = function() {
+	var arr = GAME_REFERENCE.codeChains,
+		index = -1;
+	
+	for (var i = arr.length - 1; i >= 0; i--) {
+		if (arr[i].containerElement === this.DOMWrapper) {
+			index = i;
+			break;
+		}
+	}
+	
+	if (index != -1) {
+		arr[i].deactivate();
+		arr.splice(index, 1);
+	}
+}
+
 //clonez elementul DOM si obiectul pentru a-l inlocui 
 //pe cel selectat care va fi "dragg-uit"
 _p._clone = function() {
@@ -195,8 +212,10 @@ _p._makeElementMovable = function(e) {
 	document.body.appendChild(this.DOMElement);
 	
 	//daca wrapper-ul ramane gol
-	if (this.DOMWrapper && this.DOMWrapper.children.length == 0)
+	if (this.DOMWrapper && this.DOMWrapper.children.length == 0) {
+		this._removeFromCodeChainsArray();
 		this.DOMWrapper.parentElement.removeChild(this.DOMWrapper);
+	}
 	
 	this.DOMWrapper = null;
 };
@@ -307,6 +326,9 @@ _p._attachToDroppableZone = function(e) {
 	codeElementWrapper.appendChild(this.DOMElement);
 	this.DOMWrapper = codeElementWrapper;
 	
+	//CREEZ UN CODE CHAIN NOU SI IL ADAUG IN ARRAY-UL DE CODE CHAINS
+	GAME_REFERENCE.codeChains.push(new CodeChain(this.DOMWrapper));
+	
 	this._dropDOMWrapperToDroppableZone(e);
 	
 	this.DOMElement.style.display = "block";
@@ -380,11 +402,13 @@ _p._endDragging = function(e) {
 	
 	if (this._draggingWholeChain) {
 		this.DOMWrapper.style.display = "none";
+		
 		if (this._inDroppableZone(e)) {
 			this.DOMWrapper.style.display = "";
 			this._dropDOMWrapperToDroppableZone(e);	
 		}
 		else {
+			this._removeFromCodeChainsArray();
 			this.DOMWrapper.parentElement.removeChild(this.DOMWrapper);
 		}
 			
@@ -419,8 +443,9 @@ _p._endDragging = function(e) {
 			sau inside-ul este gol (a.k.a. nu este un bloc care contine alte blocuri)
 		*/
 		else if (elUnderDrag.inside === CodeBlock.DROPPABLE_ZONE 
-					|| this._checkBlockCompatibility("inside", blocksUnderDrag.inside)
-					|| (blocksUnderDrag.inside && CodeBlock.COMPATIBILITY_RULES[blocksUnderDrag.inside.blockType]["inside"].length == 0)) {
+					|| (blocksUnderDrag.inside 
+						&& (this._checkBlockCompatibility("inside", blocksUnderDrag.inside) 
+							|| CodeBlock.COMPATIBILITY_RULES[blocksUnderDrag.inside.blockType]["inside"].length == 0))) {
 			//sunt deasupra unui bloc si am compatibilitate cu el
 			//de asemenea, daca blocul deasupra caruia ma situez are un bloc deasupra la randul lui
 			//trebuie sa verific compatibilitatea de "below" cu blocul de deasupra

@@ -1,5 +1,5 @@
 const BLOCK_NAMES = ["direction", "movement", "talking", "loop", "if", "ifelse", "stop", "keypress", "begin_game"];
-const KEY_PRESS_CHARACTERS = ["w", "a", "s", "d", "arrowup", "arrowleft", "arrowdown", "arrowright"];
+const KEY_PRESS_CHARACTERS = ["w", "a", "s", "d", "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"];
 
 var BLOCK_NAME_REGEXP = (function() {
 	var arr = [];
@@ -33,6 +33,9 @@ class CodeBlockTreeNode extends TreeNode {
 		//nodul curent este in acelasi lant de cod cu parintele sau
 		this.codeChain = parent? parent.codeChain : null;
 		this.game = parent? parent.game : null;
+		
+		if (this.game && this.game.DEBUGGING_CODE_CHAIN)
+			this._indexOfCodeChain = this.codeChain._getIndexOfThisChain();
 	}
 	
 	processInput() {}
@@ -41,14 +44,21 @@ class CodeBlockTreeNode extends TreeNode {
 _p = CodeBlockTreeNode.prototype;
 
 /*
+	pentru nodurile care nu declanseaza actiuni ce dureaza sa se termine
+	emit event-ul de nod executat imediat
+*/
+_p.execute = function() {
+	this.emit(NODE_EXECUTED_EVENT, null);
+}
+
+/*
 	- primesc un array de DOMElements si in functie de tipul lor
 	creez un nod de arbore adecvat
 	- daca vreau sa pun nodurile copii in alt array, un al doilea 
 	parametru whereToPlace este pus la dispozitie (folositor pt ifelse)
 */
 _p.processChildren = function(children, whereToPlace) {
-	console.log(children);
-	
+	//console.log(children);
 	for (var child of children) {
 		var name = getBlockName(child), newTreeNode;
 		
@@ -85,7 +95,9 @@ class EventNode extends CodeBlockTreeNode {
 	}
 	
 	//event-ul in sine nu face nimic special
-	execute() {}
+	execute() {
+		super.execute();
+	}
 	
 	processChildren() {
 		var children = Array.from(
@@ -105,7 +117,7 @@ class KeyPressEvent extends EventNode {
 	constructor(parent, element, blockName) {
 		super(parent, element, blockName);
 		
-		this.keyPressInputElement = document.getElementsByName("key")[0];
+		this.keyPressInputElement = this.DOMElement.getElementsByClassName("key")[0];
 		this.keyPress = "";
 	}
 	
@@ -140,10 +152,16 @@ class DirectionAction extends ActionNode {
 	}
 	
 	execute() {
-		this.game.emit("look", this.direction);
+		this.game.emit("look", {
+			direction : this.direction
+		});
 		
-		if (this.game.DEBUGGING_CODE_CHAIN)
+		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log("LOOKING " + this.direction);
+		}
+		
+		super.execute();
 	}
 };
 
@@ -169,8 +187,14 @@ class MovementAction extends ActionNode {
 			noOfSteps : this.noOfSteps
 		});
 		
-		if (this.game.DEBUGGING_CODE_CHAIN)
+		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log("MOVING " +  this.direction + " a number of " + this.noOfSteps + " steps");
+		}
+		
+		setTimeout(function(self) {
+			self.emit(NODE_EXECUTED_EVENT, null);
+		}, 2000, this);
 	}
 };
 
@@ -187,10 +211,16 @@ class TalkingAction extends ActionNode {
 	}
 	
 	execute() {
-		this.game.emit("talk", this.speech);
+		this.game.emit("talk", {
+			speech : this.speech
+		});
 		
-		if (this.game.DEBUGGING_CODE_CHAIN)
+		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log("SAYING " + this.speech);
+		}
+
+		super.execute();
 	}
 };
 
@@ -209,16 +239,11 @@ class Loop extends CodeBlockTreeNode {
 		var children = Array.from(
 			this.DOMElement.querySelectorAll(CodeChain.SELECTORS["loop"]["contained"])
 		);
-		console.log ("FOUND LOOP CHILDREN :");
-		console.log (children);
 		
 		//pastrez doar fii directi returnati de querySelector
 		for (var i = children.length - 1; i >= 0 ; i--)
 			if (children[i].parentElement !== this.DOMElement)
 				children.splice(i, 1);
-		
-		console.log ("AFTER LOOP CHILDREN :");
-		console.log (children);
 		
 		super.processChildren(children);
 	}
@@ -230,20 +255,47 @@ class Loop extends CodeBlockTreeNode {
 	//executia consta intr-un DFS repetat de un numar de *repetitions* ori
 	//si oprirea executiei DFS-ului principal care a a ajuns in acest nod
 	execute() {
-		if (this.game.DEBUGGING_CODE_CHAIN)
+		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log("REPEATING FOR " + this.repetitions + " TIMES: ");
+		}
+		
+		
+		//creez un dummy node pe care sa rulez DFS-ul de executie al for-ului
+		//inserez copiii for-ului de un numar de (numarul de repetitii al forului) de ori
+		var dummyTreeNode = new CodeBlockTreeNode(null, null, "");
+		
+		dummyTreeNode.execute = function() {
+			this.emit(NODE_EXECUTED_EVENT, null);
+		};
 		
 		for (var i = 0; i < this.repetitions; i++) {
 			for (var childNode of this.children) {
-				//DFS-ul la fel ca la arborele mare doar ca repetat
-				this.codeChain.treeRepresentation.DFS(
-					this.codeChain.executionCallback, childNode);
+				dummyTreeNode.children.push(childNode);
 			}
 		}
 		
-		return STOP_DFS;
+		var self = this;
+		
+		//DFS-ul la fel ca la arborele mare doar ca repetat	
+		DFSRunner(
+			this.codeChain.treeRepresentation,
+			CodeChain.executionCallback,
+			CodeChain.afterExecutionCallback, 
+			dummyTreeNode
+		).then(
+			function() {
+				self.emit(NODE_EXECUTED_EVENT, null);
+			},
+			function(err) {
+				console.error(err);
+			}
+		);
+		
+		return STOP_SUBTREE_DFS;
 	}
 };
+
 
 /***************
 *  EXPRESSION  *
@@ -266,6 +318,18 @@ class Expression extends CodeBlockTreeNode {
 	}
 	
 	processInput() {
+		var leftOperandInputGrandparent = this.leftOperandInputElement.parentElement.parentElement,
+			leftOperandInputGrandGrandparent = this.leftOperandInputElement.parentElement.parentElement.parentElement;
+		
+		if (!this.leftOperandInputElement 
+			|| (this.parent.blockName === "if" 
+				&&  leftOperandInputGrandparent !== this.parent.DOMElement)
+			|| (this.parent.blockName === "ifelse" 
+				&& leftOperandInputGrandGrandparent !== this.parent.DOMElement)) {
+			
+			console.error("EMPTY OPERATOR NOT ALLOWED!");
+			return;
+		}
 		this.leftOperandString = this.leftOperandInputElement.value;
 		this.rightOperandString = this.rightOperandInputElement.value;
 		this.operatorString = this.operatorInputElement.value;
@@ -315,11 +379,12 @@ class Expression extends CodeBlockTreeNode {
 			this.rightOperand = 100;
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log (
 				"THE EXPRESSION " + this.leftOperandString + " " + this.operatorString + " " + this.rightOperandString
 			);
 			console.log (
-				"WHERE THE OPERATOR FUNCTION IS" + this.operatorFunction
+				"WHERE THE OPERATOR FUNCTION IS " + this.operatorFunction
 			)
 			console.log (
 				"(" + this.leftOperand + " " + this.operatorString + " " + this.rightOperand + ")" +
@@ -327,7 +392,10 @@ class Expression extends CodeBlockTreeNode {
 			);
 		}
 		
-		return this.operatorFunction();
+		if (this.operatorFunction)
+			return this.operatorFunction();
+		else 
+			throw new Error("EMPTY OPERATOR NOT ALLOWED!");
 	}
 };
 
@@ -342,8 +410,12 @@ class ConditionalNode extends CodeBlockTreeNode {
 	}
 	
 	initExpression() {
-		var exprDOMElement = this.DOMElement.querySelectorAll(CodeChain.SELECTORS[this.blockName]["expression"])[0];
-		return new Expression(this, exprDOMElement, "expression");
+		var exprDOMElement = this.DOMElement.querySelectorAll(CodeChain.SELECTORS[this.blockName]["expression"])[0],
+			expression = new Expression(this, exprDOMElement, "expression");;
+		
+		expression.processInput();
+		
+		return expression;
 	}
 };
 
@@ -357,16 +429,10 @@ class IfConditional extends ConditionalNode {
 			this.DOMElement.querySelectorAll(CodeChain.SELECTORS["if"]["contained"])
 		);
 		
-		console.log ("FOUND MAINIF CHILDREN :");
-		console.log (children);
-		
 		//pastrez doar fii directi returnati de querySelector
 		for (var i = children.length - 1; i >= 0 ; i--)
 			if (children[i].parentElement !== this.DOMElement)
 				children.splice(i, 1);
-		
-		console.log ("AFTER MAINIF CHILDREN :");
-		console.log (children);
 		
 		super.processChildren(children);
 	}
@@ -378,15 +444,27 @@ class IfConditional extends ConditionalNode {
 			pe copiii if-ului. altfel 
 			executia nu mai continua in subarborele if-ului
 		*/
-		if (!this.expression.execute()) {
+		
+		super.execute();
+		
+		try {
+			var expressionEvaluation = this.expression.execute();
+		}
+		catch (err) {
+			return STOP_DFS;
+		}
+		
+		if (!expressionEvaluation) {
 			if (this.game.DEBUGGING_CODE_CHAIN) {
+				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 				console.log("NOT EXECUTING THE IF BODY");
 			}
 			
-			return STOP_DFS;
+			return STOP_SUBTREE_DFS;
 		}
 		else {
 			if (this.game.DEBUGGING_CODE_CHAIN) {
+				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 				console.log("EXECUTING THE IF BODY");
 			}
 		}
@@ -409,12 +487,6 @@ class IfElseConditional extends ConditionalNode {
 			this.DOMElement.querySelectorAll(CodeChain.SELECTORS["ifelse"]["else"])
 		);
 		
-		console.log ("FOUND IF CHILDREN :");
-		console.log (ifChildren);
-		
-		console.log ("FOUND ELSE CHILDREN :");
-		console.log (elseChildren);
-		
 		//pastrez doar fii directi returnati de querySelector
 		for (var i = ifChildren.length - 1; i >= 0 ; i--)
 			if (ifChildren[i].parentElement.parentElement !== this.DOMElement)
@@ -423,13 +495,7 @@ class IfElseConditional extends ConditionalNode {
 		for (var i = elseChildren.length - 1; i >= 0 ; i--)
 			if (elseChildren[i].parentElement.parentElement !== this.DOMElement)
 				elseChildren.splice(i, 1);
-		
-		console.log ("AFTER IF CHILDREN :");
-		console.log (ifChildren);
-		
-		console.log ("AFTER ELSE CHILDREN :");
-		console.log (elseChildren);
-		
+	
 		super.processChildren(ifChildren, this.ifChildren);
 		super.processChildren(elseChildren, this.elseChildren);
 		
@@ -443,11 +509,22 @@ class IfElseConditional extends ConditionalNode {
 			pe copiii if-ului. altfel 
 			executia va continua pe copiii else-ului
 		*/
-		if (!this.expression.execute()) {
+		
+		super.execute();
+		
+		try {
+			var expressionEvaluation = this.expression.execute();
+		}
+		catch (err) {
+			return STOP_DFS;
+		}
+		
+		if (!expressionEvaluation) {
 			this.children = this.elseChildren;
 			
 			
 			if (this.game.DEBUGGING_CODE_CHAIN) {
+				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 				console.log("EXECUTING THE ELSE BODY");
 			}
 		}
@@ -455,6 +532,7 @@ class IfElseConditional extends ConditionalNode {
 			this.children = this.ifChildren;
 			
 			if (this.game.DEBUGGING_CODE_CHAIN) {
+				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 				console.log("EXECUTING THE IF BODY");
 			}
 		}
@@ -475,8 +553,12 @@ class Stop extends CodeBlockTreeNode {
 	//DFS-ul de executie va fi oprit
 	execute() {
 		if (this.game.DEBUGGING_CODE_CHAIN) {
+			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			console.log("STOPPING THE EXECUTION OF THE CURRENT CHAIN");
 		}
+		
+		super.execute();
+		
 		return STOP_DFS;
 	}
 }
