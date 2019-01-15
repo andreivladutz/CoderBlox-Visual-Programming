@@ -1,15 +1,36 @@
 const GAME_START_EVENT = "gamestart",
 	  GAME_STOP_EVENT = "gamestop";
 
+const CHARACTER_NAMES = ["John", "Johnny"];
+
+var CHARACTERS = {
+	  "John" : {
+		  "headImage" : "media/APP/charas/John-head.png/",
+		  //aici va fi obiectul img al sprite-ului dupa ce s-a incarcat
+		  "spriteResource" : null
+	  },
+	  "Johnny" : {
+		  "headImage" : "media/APP/charas/Johnny-head.png/",
+		  "spriteResource" : null
+	  }
+  };
+
 class Game extends EventEmiter {
 	constructor() {
 		super();
 		
+		this.finishedLoadingCharasPromises = [];
+		
 		this.gui = new GameUI(this);
 		this.resLoad = this._loadResources();
 		
+		this.running = false;
+		
 		//toate chain-urile de blocuri create vor fi adaugate aici 
 		this.codeChains = [];
+		
+		//cand toate blocurile de cod au terminat de executat s-a sfarsit jocul
+		this.finishGamePromises = [];
 		
 		this.DEBUGGING_CODE_CHAIN = false;
 		this.DEBUGGING_DRAG_AND_DROP = false;
@@ -29,11 +50,32 @@ _p._loadResources = function() {
 	resLoad.addEventListener("loadedCodeBlocksXML", this._boxCodeBlocks);
 	resLoad.addEventListener("loadedCompatibilityJSON", this._setCodeBlocksCompatibility);
 	resLoad.addEventListener("loadedSelectorsJSON", this._setCodeBlocksSelectors);
+	
+	//fac cate un promise pt fiecare caracter si astept sa se incarce toate caracterele
+	for (let charaName of CHARACTER_NAMES) {
+		this.finishedLoadingCharasPromises.push(
+			new Promise(function(resolve, reject) {
+				resLoad.addEventListener("loaded" + charaName, function(e) {
+					CHARACTERS[charaName]["spriteResource"] = e.detail;
+					
+					resolve(e);
+				});
+			})
+		);
+	}
+	
+	Promise.all(this.finishedLoadingCharasPromises)
+		.then(this._onLoadedCharacters.bind(this));
 
 	resLoad.add(RESOURCES);
 	resLoad.load();
 	
 	return resLoad;
+}
+
+_p._onLoadedCharacters = function() {
+	console.log("LOADED CHARACTERS");
+	console.log(CHARACTERS);
 }
 
 /*
@@ -72,6 +114,7 @@ _p._setCodeBlocksCompatibility = function(e) {
 
 _p._addCustomListeners = function() {
 	this.on(GAME_START_EVENT, this._startGame);
+	this.on(GAME_STOP_EVENT, this._stopGame);
 }
 
 _p.startDebuggingCodeChain = function() {
@@ -83,8 +126,27 @@ _p.startDebuggingDragAndDrop = function() {
 }
 
 _p._startGame = function() {
+	if (this.running) return;
+	
+	this.running = true;
+	
 	for (var codeChain of this.codeChains) {
 		codeChain.parseTree();
 		codeChain.emit(GAME_START_EVENT, null);
+	}
+	
+	//astept sa se termine toate blocurile de cod de rulat
+	Promise.all(this.finishGamePromises).then(this._stopGame.bind(this));
+}
+
+_p._stopGame = function() {
+	if (!this.running) return;
+	
+	this.running = false;
+	
+	this.gui.handleStopButtonPress();
+	
+	for (var codeChain of this.codeChains) {
+		codeChain.interruptCodeExecution();
 	}
 }

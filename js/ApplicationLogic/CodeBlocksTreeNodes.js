@@ -18,6 +18,37 @@ function getBlockName(el) {
 			return BLOCK_NAMES[i];
 };
 
+function validateNumberInput(el, codeChain) {
+	if (parseFloat(el.value) != parseInt(el.value)) {
+		reportInvalidCode(el, "Input value must be a natural number", codeChain);
+		return false;
+	}
+	else if (parseInt(el.value) >= parseInt(el.min) && parseInt(el.value) <= parseInt(el.max)) {
+		//in caz ca pana acum a fost input eronat
+		el.classList.remove("erroneousStatement");
+		el.removeAttribute("title");
+		
+		return true;
+	}
+	else {
+		reportInvalidCode(el, "Input value must be between " + el.min + " and " + el.max, codeChain);
+		return false;
+	}
+}
+
+/*
+	atunci cand avem o expresie vida sau input invalid
+	la parsarea unui lant de blocuri de cod o raportam vizual
+	si prevenim rularea lantului de cod
+*/
+function reportInvalidCode(DOMElement, message, codeChain) {
+	DOMElement.classList.add("erroneousStatement");
+	DOMElement.title = message;
+	
+	codeChain.preventFromRunning = true;
+	LOGGER.error(message);
+}
+
 /*
 	primului nod dintr-un arbore ii vor trebui atribuite direct :
 		-codeChain
@@ -58,7 +89,7 @@ _p.execute = function() {
 	parametru whereToPlace este pus la dispozitie (folositor pt ifelse)
 */
 _p.processChildren = function(children, whereToPlace) {
-	//console.log(children);
+	//LOGGER.log(children);
 	for (var child of children) {
 		var name = getBlockName(child), newTreeNode;
 		
@@ -157,8 +188,8 @@ class DirectionAction extends ActionNode {
 		});
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log("LOOKING " + this.direction);
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log("LOOKING " + this.direction);
 		}
 		
 		super.execute();
@@ -179,6 +210,8 @@ class MovementAction extends ActionNode {
 	processInput() {
 		this.direction = this.directionInputElement.value;
 		this.noOfSteps = parseInt(this.noOfStepsInputElement.value);
+		
+		validateNumberInput(this.noOfStepsInputElement, this.codeChain);
 	}
 	
 	execute() {
@@ -188,8 +221,8 @@ class MovementAction extends ActionNode {
 		});
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log("MOVING " +  this.direction + " a number of " + this.noOfSteps + " steps");
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log("MOVING " +  this.direction + " a number of " + this.noOfSteps + " steps");
 		}
 		
 		setTimeout(function(self) {
@@ -216,8 +249,8 @@ class TalkingAction extends ActionNode {
 		});
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log("SAYING " + this.speech);
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log("SAYING " + this.speech);
 		}
 
 		super.execute();
@@ -250,47 +283,52 @@ class Loop extends CodeBlockTreeNode {
 	
 	processInput() {
 		this.repetitions = parseInt(this.repetitionsInputElement.value);
+		
+		validateNumberInput(this.repetitionsInputElement, this.codeChain);
 	}
 	
 	//executia consta intr-un DFS repetat de un numar de *repetitions* ori
 	//si oprirea executiei DFS-ului principal care a a ajuns in acest nod
 	execute() {
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log("REPEATING FOR " + this.repetitions + " TIMES: ");
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log("REPEATING FOR " + this.repetitions + " TIMES: ");
 		}
 		
 		
 		//creez un dummy node pe care sa rulez DFS-ul de executie al for-ului
-		//inserez copiii for-ului de un numar de (numarul de repetitii al forului) de ori
+		//inserez copiii for-ului in el
 		var dummyTreeNode = new CodeBlockTreeNode(null, null, "");
 		
 		dummyTreeNode.execute = function() {
 			this.emit(NODE_EXECUTED_EVENT, null);
 		};
 		
-		for (var i = 0; i < this.repetitions; i++) {
-			for (var childNode of this.children) {
-				dummyTreeNode.children.push(childNode);
-			}
+		for (var childNode of this.children) {
+			dummyTreeNode.children.push(childNode);
 		}
 		
 		var self = this;
 		
 		//DFS-ul la fel ca la arborele mare doar ca repetat	
+		//pun referinta la iteratorul generatorului tot in dummyTreeNode
 		DFSRunner(
+			dummyTreeNode,
 			this.codeChain.treeRepresentation,
 			CodeChain.executionCallback,
 			CodeChain.afterExecutionCallback, 
-			dummyTreeNode
+			dummyTreeNode,
+			this.repetitions
 		).then(
 			function() {
 				self.emit(NODE_EXECUTED_EVENT, null);
 			},
 			function(err) {
-				console.error(err);
+				LOGGER.error(err);
 			}
 		);
+		
+		this.codeChain.loopsGeneratorIterators.push(dummyTreeNode.generatorIterator);
 		
 		return STOP_SUBTREE_DFS;
 	}
@@ -318,16 +356,20 @@ class Expression extends CodeBlockTreeNode {
 	}
 	
 	processInput() {
+		if (!this.leftOperandInputElement) {
+			reportInvalidCode(this.DOMElement, "EMPTY OPERATOR NOT ALLOWED!", this.codeChain);
+			return;
+		}
+		
 		var leftOperandInputGrandparent = this.leftOperandInputElement.parentElement.parentElement,
 			leftOperandInputGrandGrandparent = this.leftOperandInputElement.parentElement.parentElement.parentElement;
 		
-		if (!this.leftOperandInputElement 
-			|| (this.parent.blockName === "if" 
+		if ((this.parent.blockName === "if" 
 				&&  leftOperandInputGrandparent !== this.parent.DOMElement)
 			|| (this.parent.blockName === "ifelse" 
 				&& leftOperandInputGrandGrandparent !== this.parent.DOMElement)) {
 			
-			console.error("EMPTY OPERATOR NOT ALLOWED!");
+			reportInvalidCode(this.DOMElement, "EMPTY OPERATOR NOT ALLOWED!", this.codeChain);
 			return;
 		}
 		this.leftOperandString = this.leftOperandInputElement.value;
@@ -379,14 +421,14 @@ class Expression extends CodeBlockTreeNode {
 			this.rightOperand = 100;
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log (
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log (
 				"THE EXPRESSION " + this.leftOperandString + " " + this.operatorString + " " + this.rightOperandString
 			);
-			console.log (
+			LOGGER.log (
 				"WHERE THE OPERATOR FUNCTION IS " + this.operatorFunction
 			)
-			console.log (
+			LOGGER.log (
 				"(" + this.leftOperand + " " + this.operatorString + " " + this.rightOperand + ")" +
 				" EVALUATED AS " + this.operatorFunction()
 			);
@@ -451,21 +493,22 @@ class IfConditional extends ConditionalNode {
 			var expressionEvaluation = this.expression.execute();
 		}
 		catch (err) {
+			reportInvalidCode(this.expression.DOMElement, "EMPTY OPERATOR NOT ALLOWED!", this.codeChain);
 			return STOP_DFS;
 		}
 		
 		if (!expressionEvaluation) {
 			if (this.game.DEBUGGING_CODE_CHAIN) {
-				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-				console.log("NOT EXECUTING THE IF BODY");
+				LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+				LOGGER.log("NOT EXECUTING THE IF BODY");
 			}
 			
 			return STOP_SUBTREE_DFS;
 		}
 		else {
 			if (this.game.DEBUGGING_CODE_CHAIN) {
-				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-				console.log("EXECUTING THE IF BODY");
+				LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+				LOGGER.log("EXECUTING THE IF BODY");
 			}
 		}
 	}
@@ -516,6 +559,7 @@ class IfElseConditional extends ConditionalNode {
 			var expressionEvaluation = this.expression.execute();
 		}
 		catch (err) {
+			reportInvalidCode(this.expression.DOMElement, "EMPTY OPERATOR NOT ALLOWED!", this.codeChain);
 			return STOP_DFS;
 		}
 		
@@ -524,16 +568,16 @@ class IfElseConditional extends ConditionalNode {
 			
 			
 			if (this.game.DEBUGGING_CODE_CHAIN) {
-				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-				console.log("EXECUTING THE ELSE BODY");
+				LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+				LOGGER.log("EXECUTING THE ELSE BODY");
 			}
 		}
 		else {
 			this.children = this.ifChildren;
 			
 			if (this.game.DEBUGGING_CODE_CHAIN) {
-				console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-				console.log("EXECUTING THE IF BODY");
+				LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+				LOGGER.log("EXECUTING THE IF BODY");
 			}
 		}
 	}
@@ -553,8 +597,8 @@ class Stop extends CodeBlockTreeNode {
 	//DFS-ul de executie va fi oprit
 	execute() {
 		if (this.game.DEBUGGING_CODE_CHAIN) {
-			console.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
-			console.log("STOPPING THE EXECUTION OF THE CURRENT CHAIN");
+			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
+			LOGGER.log("STOPPING THE EXECUTION OF THE CURRENT CHAIN");
 		}
 		
 		super.execute();

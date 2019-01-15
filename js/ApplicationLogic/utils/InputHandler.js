@@ -241,6 +241,19 @@ class TouchHandler extends InputHandlerBase {
 		this._lastEvent = e;
 		super._handleMove(e);
 	}
+	
+	//for some reason daca am listener de touchstart,end,move pe parinte DOM
+	//copiii nu mai primes eventul de pseudo click
+	allowClickEventsOnChildren() {
+		var children = this._element.children;
+		
+		for (var child of children) {
+			child.addEventListener("touchend", function(e) {
+				var clickEvent = new MouseEvent("click");
+				e.target.dispatchEvent(clickEvent);
+			});
+		}
+	}
 }
 
 _p = TouchHandler.prototype;

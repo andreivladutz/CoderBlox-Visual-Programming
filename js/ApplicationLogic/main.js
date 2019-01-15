@@ -17,35 +17,29 @@ const RESOURCES = [
 	},	
 	{
 		name : "CompatibilityJSON",
-		itemType : "XML",
+		itemType : "JSON",
 		url : "resources/COMPATIBILITATE.JSON"
 	},	
 	{
 		name : "SelectorsJSON",
-		itemType : "XML",
+		itemType : "JSON",
 		url : "resources/SELECTORI.JSON"
 	}
 ];
 
-var GAME_REFERENCE;
+var GAME_REFERENCE, LOGGER;
 
 function init() {
 	GAME_REFERENCE = new Game();
 	GAME_REFERENCE.startDebuggingCodeChain();
 	//GAME_REFERENCE.startDebuggingDragAndDrop();
 	
-	/*
-	canvas.style.position = "absolute";
-	canvas.style.top = 0;
-	canvas.style.left = 0;
-	document.body.appendChild(canvas);
-	*/
-	
 }
 
-var ctx;
+var ctx, canvas;
 
 function repaintCanvas(canvas) {
+	window.canvas = canvas;
 	ctx = canvas.getContext("2d");
 	
 	ctx.fillStyle = "white";

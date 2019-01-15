@@ -22,7 +22,9 @@
 		<script src = "js/ApplicationLogic/utils/isTouchDevice.js"></script>
 		<script src = "js/ApplicationLogic/utils/EventEmiter.js"></script>
 		<script src = "js/ApplicationLogic/utils/InputHandler.js"></script>
+		<script src = "js/ApplicationLogic/utils/VirtualKeyboard.js"></script>
 		<script src = "js/ApplicationLogic/utils/ResourceLoader.js"></script>
+		<script src = "js/ApplicationLogic/utils/Logger.js"></script>
 		<script src = "js/ApplicationLogic/utils/Tree.js"></script>
 		<script src = "js/ApplicationLogic/CodeBlock.js"></script>
 		<script src = "js/ApplicationLogic/CodeBlocksTreeNodes.js"></script>
@@ -60,10 +62,10 @@
 				<h2>Joc</h2>
 				<div id = "gamebuttons-wrapper">
 					<div id = "startbutton" class = "gamebutton"><img src = "media/APP/buttons/start.png" alt = "start-game" title = "Start joc"></div>
-					<div id = "pausebutton" class = "gamebutton"><img src = "media/APP/buttons/pause.png" alt = "pause-game" title = "Pauza"></div>
+					<!--div id = "pausebutton" class = "gamebutton"><img src = "media/APP/buttons/pause.png" alt = "pause-game" title = "Pauza"></div-->
 					<div id = "stopbutton" class = "gamebutton"><img src = "media/APP/buttons/stop.png" alt = "stop-game" title = "Stop"></div>
 					<div id = "fullscreenbutton" class = "gamebutton">
-						<img src = "media/APP/buttons/fullscreen.png" alt = "fullscreen" title = "Fullscreen">
+						<img id = "toggleFullscreenImg" src = "media/APP/buttons/fullscreen.png" alt = "fullscreen" title = "Fullscreen">
 					</div>
 				</div>
 				<canvas id = "mainCanvas"></canvas>
@@ -76,12 +78,20 @@
 						<img id = "myimg" src = "media/APP/buttons/switch.png" alt = "switch-chara" title = "Schimba caracterul">
 					</li>
 					<li><img id = "chara-head" src = "media/APP/charas/Johnny-head.png" alt = "caracter Johnny"></li>
+					<li id = "logger-li">
+						<img id = "logger-button" src = "media/APP/buttons/logger.png" alt = "show Logger" title = "Toggle Logger">
+					</li>
+					<li id = "settings-li">
+						<img id = "settings-button" src = "media/APP/buttons/settings.png" alt = "show Settings" title = "Toggle Settings">
+					</li>
 				</ul>
 			</section>
 			
 			<footer>
 				<a href = "index.html"><span id = "logo" title = "Inapoi la pagina principala">Coder&lt;Blox&gt;</span></a>
-				<div id = "save-progress"><img id = "save-progress-button" src = "media/APP/buttons/save.png" alt = "save-progress" title = "Salveaza progresul"></div>
+				<div id = "save-progress">
+					<img id = "save-progress-button" src = "media/APP/buttons/save.png" alt = "save-settings" title = "Salveaza setarile">
+				</div>
 			</footer>
 		</div>
 	</body>

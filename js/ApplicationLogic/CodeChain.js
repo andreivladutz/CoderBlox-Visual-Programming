@@ -8,6 +8,18 @@ class CodeChain extends EventEmiter {
 		this.treeRepresentation = null;
 		
 		this.keyPressHandler = null;
+		
+		//daca intalnim o eroare in parsarea codului nu mai incercam sa-l rulam
+		//exemplu de erori: (lipsa unei expresii in conditionala, inputuri invalide)
+		this.preventFromRunning = false;
+		
+		//tin o referinta la generatorul DFS care ruleaza codul curent
+		//pentru a-l putea opri in caz de apasarea butonului STOP
+		this.generatorIterator = null;
+		
+		//array de referinte la generatori ce ruleaza codul din loop-uri
+		//continute in lantul curent de blocuri de cod
+		this.loopsGeneratorIterators = [];
 	}
 	
 }
@@ -24,14 +36,16 @@ _p = CodeChain.prototype;
 
 //execut chain-ul curent
 _p.runCodeChain = function() {
+	if (this.preventFromRunning)
+		return;
+	
 	this.addOutline = function() {
 		this._settedOutlineTime = new Date().getTime(); 
-		this.containerElement.style.outlineColor = "red";
-		this.containerElement.style.outlineStyle = "solid";
+		this.containerElement.style.boxShadow = "-10px -10px 18px rgba(231, 170, 110, 0.86)";
 	}
 
-	if (this._clearedOutlineTime 
-		&& new Date().getTime() - this._clearedOutlineTime >= outlineMillisecondsTime) {
+	if (!this._clearedOutlineTime 
+		|| new Date().getTime() - this._clearedOutlineTime >= outlineMillisecondsTime) {
 
 		this.addOutline();
 	}
@@ -40,19 +54,22 @@ _p.runCodeChain = function() {
 	}
 	
 	//vreau ca parametrul startNode sa fie cel default (root-ul)
-	DFSRunner(
-		this.treeRepresentation, 
-		CodeChain.executionCallback, 
-		CodeChain.afterExecutionCallback, 
-		undefined
-	).then(this.onFinishedExecution.bind(this));
+	var finishBlockPromise = 
+		DFSRunner(
+			this,
+			this.treeRepresentation, 
+			CodeChain.executionCallback, 
+			CodeChain.afterExecutionCallback, 
+			undefined
+		).then(this.onFinishedExecution.bind(this));
+	
+	GAME_REFERENCE.finishGamePromises.push(finishBlockPromise);
 }
 
 _p.onFinishedExecution = function() {
 	this.removeOutline = function() {
 		this._clearedOutlineTime = new Date().getTime(); 
-		this.containerElement.style.outlineColor = "";
-		this.containerElement.style.outlineStyle = "";
+		this.containerElement.style.boxShadow = "";
 	}
 	
 	if (new Date().getTime() - this._settedOutlineTime >= outlineMillisecondsTime) {
@@ -77,6 +94,11 @@ _p.parseTree = function() {
 		return;
 	}
 	
+	this.generatorIterator = null;
+	this.loopsGeneratorIterators = [];
+	
+	this.preventFromRunning = false;
+	
 	var firstCodeBlock = this.containerElement.firstElementChild;
 	
 	/*
@@ -98,12 +120,15 @@ _p.parseTree = function() {
 	else if (eventName === "keypress") {
 		this.treeRepresentation.root = new KeyPressEvent(null, firstCodeBlock, "keypress");
 		
-		this.keyPressHandler = function(e) {
+		this.keyPressHandler = (function(e) {
 			if (e.key === this.treeRepresentation.root.keyPress)
 				this.runCodeChain();
-		}
+		}).bind(this);
 		
-		document.body.addEventListener("keydown", this.keyPressHandler.bind(this));
+		document.body.addEventListener("keyup", this.keyPressHandler);
+		
+		//never ending promise. atat timp cat avem listener pentru keypress, jocul nu se poate termina singur
+		GAME_REFERENCE.finishGamePromises.push(new Promise(function() {}));
 	}
 	
 	this.treeRepresentation.root.codeChain = this;
@@ -115,6 +140,17 @@ _p.parseTree = function() {
 								});
 }
 
+_p.interruptCodeExecution = function() {
+	this.generatorIterator && this.generatorIterator.return();
+	
+	for (var it of this.loopsGeneratorIterators) {
+		it && it.return();
+	}
+	
+	this.onFinishedExecution();
+	this._destroyOldTree();
+}
+
 _p._destroyOldTree = function() {
 	if (!this.treeRepresentation || !this.treeRepresentation.root) return;
 	
@@ -122,7 +158,7 @@ _p._destroyOldTree = function() {
 		this.removeEventListener();
 	}
 	else if (this.treeRepresentation.root.blockName === "keypress") {
-		document.body.removeEventListener("keydown", this.keyPressHandler);
+		document.body.removeEventListener("keyup", this.keyPressHandler);
 	}
 	
 	this.treeRepresentation.root = null;

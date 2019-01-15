@@ -30,7 +30,7 @@ _p._addItem = function(obj, onLoadedSetter, onFailSetter, beginLoading) {
 }
 
 _p.updateProgress = function() {
-	console.log ("Loaded " + this.loadedItems + " out of " + this.totalItemsToLoad);
+	LOGGER.log ("Loaded " + this.loadedItems + " out of " + this.totalItemsToLoad);
 }
 
 /*
@@ -128,9 +128,15 @@ _p.addImage = function(name, url) {
 
 /*
 	loader-ul va emite obiectul xhttp la incarcare
+	
+	itemType va fi JSON sau XML
 */
-_p.addXML = function(name, url) {
+_p.addXML = function(name, itemType, url) {
 	var xhttp = this._resourceObjects[name] = new XMLHttpRequest();
+	
+	if (itemType === "JSON")
+		xhttp.overrideMimeType("application/json");
+	
 	xhttp._availableResource = false;
 	
 	function onLoadedSetter(resolve) {
@@ -162,7 +168,7 @@ _p.addXML = function(name, url) {
 
 /*
 	name = identificator pentru obiectul incarcat(folosit la get)
-	itemType = img sau XML
+	itemType = img, XML sau JSON
 	url = sursa fisierului
 	
 	sau
@@ -176,13 +182,13 @@ _p.add = function(name, itemType, url) {
 		for (var i = 0; i < paramArr.length; i++)
 			if (paramArr[i].itemType == "img")
 				this.addImage(paramArr[i].name, paramArr[i].url);
-			else if (paramArr[i].itemType == "XML")
-				this.addXML(paramArr[i].name, paramArr[i].url);
+			else if (paramArr[i].itemType == "XML" || paramArr[i].itemType == "JSON")
+				this.addXML(paramArr[i].name, paramArr[i].itemType, paramArr[i].url);
 	}
 	
 	if (itemType == "img")
 		this.addImage(name, url);
-	else if (itemType == "XML")
-		this.addXML(name, url);
+	else if (itemType == "XML" || itemType == "JSON")
+		this.addXML(name, itemType, url);
 	
 }

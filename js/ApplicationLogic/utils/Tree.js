@@ -12,12 +12,17 @@ var unboundGeneratorDFS;
 	toate sunt wrap-uite intr-un promise(de la primul apel al lui step) ce va fi rezolvat cand se va
 	termina executia completa a DFS-ului (sau va fi oprit)
 	
+	saveGenIterator = un obiect pe care vom salva iteratorul la generator 
+						in proprietatea .generatorIterator
 	bindToTree = arborele ce va fi this in generator
 	restul parametrilor = parametrii DFS-ului
 	startNode poate fi omis (default va fi root)
+	numberOfRepetitions poate fi omis (default este 1)
 */
-function DFSRunner(bindToTree, beforeCallback, afterCallback, startNode) {
-	var genIterator = unboundGeneratorDFS.call(bindToTree, beforeCallback, afterCallback, startNode);
+function DFSRunner(saveGenIterator, bindToTree, beforeCallback, afterCallback, startNode, numberOfRepetitions) {
+	var genIterator = unboundGeneratorDFS.call(bindToTree, beforeCallback, afterCallback, startNode, numberOfRepetitions);
+	
+	saveGenIterator.generatorIterator = genIterator;
 	
 	function step(action, args) {
 		try {
@@ -85,7 +90,10 @@ class Tree {
 
 _p = Tree.prototype;
 
-_p.generatorDFS = unboundGeneratorDFS = function*(beforeCallback, afterCallback, currentNode = this.root) {
+/*
+	numberOfRepetitions = numarul de repetari de DFS-uri pe copiii nodului curent
+*/
+_p.generatorDFS = unboundGeneratorDFS = function*(beforeCallback, afterCallback, currentNode = this.root, numberOfRepetitions = 1) {
 	if (this._DFSAborted) {
 		return;
 	}
@@ -113,15 +121,16 @@ _p.generatorDFS = unboundGeneratorDFS = function*(beforeCallback, afterCallback,
 		return;
 	}
 	
-	for (var child of currentNode.children) {
-		//un copil a oprit executia dfs-ului
-		if (this._DFSAborted) {
-			afterCallback(currentNode);
-			return;
+	for (var i = 0; i < numberOfRepetitions; i++)
+		for (var child of currentNode.children) {
+			//un copil a oprit executia dfs-ului
+			if (this._DFSAborted) {
+				afterCallback(currentNode);
+				return;
+			}
+
+			yield* this.generatorDFS(beforeCallback, afterCallback, child);
 		}
-		
-		yield* this.generatorDFS(beforeCallback, afterCallback, child);
-	}
 	
 	afterCallback(currentNode);
 }
