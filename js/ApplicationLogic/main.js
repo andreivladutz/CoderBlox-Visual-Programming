@@ -35,27 +35,3 @@ function init() {
 	//GAME_REFERENCE.startDebuggingDragAndDrop();
 	
 }
-
-var ctx, canvas;
-
-function repaintCanvas(canvas) {
-	window.canvas = canvas;
-	ctx = canvas.getContext("2d");
-	
-	ctx.fillStyle = "white";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	drawChara();
-}
-
-function drawChara(character = drawChara.character) {
-	if (!character || !character._availableResource) return;
-	
-	drawChara.character = character;
-	
-	var spriteHeight = Math.floor(character.height / 4), spriteWidth = Math.floor(character.width / 3);
-	
-	//desenez caracterul in mijlocul canvas-ului
-	ctx.drawImage(character, spriteWidth, spriteHeight * 2, spriteWidth, spriteHeight, 
-				  Math.floor( canvas.width / 2 - spriteWidth / 2), Math.floor(canvas.height / 2 - spriteHeight / 2), 
-				  spriteWidth, spriteHeight);
-}

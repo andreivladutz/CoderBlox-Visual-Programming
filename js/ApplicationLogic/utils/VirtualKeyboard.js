@@ -12,6 +12,12 @@ class VirtualKeyboard extends InputHandler {
 		
 		this.createKeyboard();
 		this.setWASDKeys();
+		this.setListeners();
+		
+		({
+			width: this._oldWindowWidth,
+			height: this._oldWindowHeight
+		} = viewportSize());
 		
 		if (isTouchDevice()) 
 			this.allowClickEventsOnChildren();
@@ -51,7 +57,9 @@ class VirtualKeyboard extends InputHandler {
 		this.downKey.appendChild(s);
 		this.leftKey.appendChild(a);
 		this.rightKey.appendChild(d);
-		
+	}
+	
+	setListeners() {
 		this.upKey.addEventListener("click", this.handleUpKeyPress.bind(this));
 		this.downKey.addEventListener("click", this.handleDownKeyPress.bind(this));
 		this.leftKey.addEventListener("click", this.handleLeftKeyPress.bind(this));
@@ -141,8 +149,40 @@ class VirtualKeyboard extends InputHandler {
 		this.keyboardContainer.style.left = left + e.detail.deltaX + "px";
 	}
 	
+	hide() {
+		this.keyboardContainer.style.display = "none";
+	}
+	
+	show() {
+		this.keyboardContainer.style.display = "";
+	}
+	
 	setPositionInPage(left, top) {
 		this.keyboardContainer.style.left = left;
 		this.keyboardContainer.style.top = top;
+	}
+	
+	getPositionInPage() {
+		return {
+			top : this.keyboardContainer.style.top,
+			left : this.keyboardContainer.style.left,
+			_oldWindowWidth : this._oldWindowWidth,
+			_oldWindowHeight : this._oldWindowHeight
+		};
+	}
+	
+	repositionAfterResize(e, oldWidth = this._oldWindowWidth, oldHeight = this._oldWindowHeight) {
+		//this._oldWindow*Property* va fi defapt noua dimensiune a ecranului acum
+		({
+			width: this._oldWindowWidth,
+			height: this._oldWindowHeight
+		} = viewportSize());
+		
+		var style = window.getComputedStyle(this.keyboardContainer),
+			left = parseInt(style.left),
+			top = parseInt(style.top);
+		
+		this.keyboardContainer.style.left = (this._oldWindowWidth * left) / oldWidth + "px";
+		this.keyboardContainer.style.top = (this._oldWindowHeight * top) / oldHeight + "px";
 	}
 }

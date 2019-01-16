@@ -20,7 +20,16 @@ const FULLSCREEN_ICON_SRC = "media/APP/buttons/fullscreen.png",
 const FPS_RANGE_KEY = "fpsRange",
 	  SHOW_KEYBOARD_CHECKBOX_KEY = "keyboardCheckbox",
 	  WASD_KEYBOARD_RADIO_KEY = "wasdRadio",
+	  KEYBOARD_POSITION_KEY = "keyboardPosition",
 	  SELECTED_CHARACTER_KEY = "selectedCharacter";
+
+//functie ce returneaza dimensiunile ecranului
+function viewportSize() {
+	return {
+		width : Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+		height : Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+	};
+}
 
 class GameUI {
 	constructor(game) {
@@ -57,12 +66,24 @@ class GameUI {
 		//sagetelele sau wasd
 		this.radioElements = [];
 		
-		this.createElements();
-		this.setListeners();
+		this.initUI();
 	};
 }
 
 var _p = GameUI.prototype;
+
+_p.initUI = function() {
+	this.createElements();
+	this.setListeners();
+	this.loadSettings();
+	this.toggleVirtualKeyboard();
+	this.onFPSRangeChange();
+
+	if (this.radioElements[0].checked)
+		this.virtualKeyboard.setWASDKeys();
+	else
+		this.virtualKeyboard.setArrowKeys();
+}
 
 _p.initButtons = function() {
 	 var buttonsArr = [
@@ -100,14 +121,27 @@ _p.setListeners = function() {
 	this._FULLSCREEN_BUTTON.addEventListener("click", this.toggleFullScreenCanvas.bind(this));
 	
 	this.rangeElement.addEventListener("change", this.onFPSRangeChange.bind(this));
-	this.checkboxElement.addEventListener("change", console.log);
-	this.radioElements[0].addEventListener("change", console.log);
-	this.radioElements[1].addEventListener("change", console.log);
+	this.checkboxElement.addEventListener("change", this.toggleVirtualKeyboard.bind(this));
+	this.radioElements[0].addEventListener("change", this.virtualKeyboard.setWASDKeys.bind(this.virtualKeyboard));
+	this.radioElements[1].addEventListener("change", this.virtualKeyboard.setArrowKeys.bind(this.virtualKeyboard));
+	
+	this._SAVE_BUTTON.addEventListener("click", this.saveSettings.bind(this));
 	
 	this._LOGGER_BUTTON.addEventListener("click", this.toggleLogger.bind(this));	
 	
 	this._SETTINGS_BUTTON.addEventListener("click", this.toggleSettings.bind(this));
+	
+	this._SWITCH_BUTTON.addEventListener("click", this.game.changeCharacter.bind(this.game));
+	
+	window.addEventListener("resize", this.virtualKeyboard.repositionAfterResize.bind(this.virtualKeyboard));
 };
+
+_p.toggleVirtualKeyboard = function() {
+	if (this.checkboxElement.checked)
+		this.virtualKeyboard.show();
+	else
+		this.virtualKeyboard.hide();
+}
 
 _p.toggleSettings = function() {
 	if (this.fieldSet.style.display) {
@@ -188,8 +222,6 @@ _p.createElements = function() {
 	this.rangeElement.max = "60";
 	this.rangeElement.step = "15";
 	
-	this.onFPSRangeChange();
-	
 	this.rangeElement.id = "rangeFPS";
 	this.checkboxElement.id = "checkboxKeyboard";
 	this.radioElements[0].id = "radioWASD";
@@ -226,6 +258,36 @@ _p.createElements = function() {
 	LOGGER = new Logger(this.textAreaElement);
 }
 
+_p.saveSettings = function() {
+	localStorage.setItem(FPS_RANGE_KEY, this.rangeElement.value);
+	localStorage.setItem(SHOW_KEYBOARD_CHECKBOX_KEY, this.checkboxElement.checked);
+	localStorage.setItem(WASD_KEYBOARD_RADIO_KEY, this.radioElements[0].checked);
+	localStorage.setItem(KEYBOARD_POSITION_KEY, JSON.stringify(this.virtualKeyboard.getPositionInPage()));
+	
+	this.game._saveSelectedCharacter();
+}
+
+_p.loadSettings = function() {
+	var fpsRangeValue = localStorage.getItem(FPS_RANGE_KEY),
+		keyboardCheboxChecked = localStorage.getItem(SHOW_KEYBOARD_CHECKBOX_KEY),
+		wasdRadioChecked = localStorage.getItem(WASD_KEYBOARD_RADIO_KEY),
+		keyboardPos = JSON.parse(localStorage.getItem(KEYBOARD_POSITION_KEY));
+	
+	if (fpsRangeValue)
+		this.rangeElement.value = fpsRangeValue;
+	if (keyboardCheboxChecked)
+		this.checkboxElement.checked = (keyboardCheboxChecked === "true")? true : false;
+	if (wasdRadioChecked) {
+		this.radioElements[0].checked = (wasdRadioChecked === "true")? true : false;
+		this.radioElements[1].checked = (wasdRadioChecked === "true")? false : true;
+	}
+	if (keyboardPos) {
+		this.virtualKeyboard.setPositionInPage(keyboardPos.left, keyboardPos.top);
+		this.virtualKeyboard.repositionAfterResize(null, keyboardPos._oldWindowWidth, keyboardPos._oldWindowHeight);
+	}
+		
+}
+
 _p.toggleFullScreenCanvas = function() {
 	var toggleFullscreenImg = document.getElementById(TOGGLE_FULLSCREEN_IMG_ID);
 	
@@ -235,6 +297,11 @@ _p.toggleFullScreenCanvas = function() {
 		this.canvas.style.position = "absolute";
 		this.canvas.style.top = 0;
 		this.canvas.style.left = 0;
+		this.canvas.style.zIndex = "2000";
+		this._PLAY_BUTTON.style.zIndex = "2001";
+		this._STOP_BUTTON.style.zIndex = "2001";
+		this._FULLSCREEN_BUTTON.style.zIndex = "2001";
+		
 		document.body.appendChild(this.canvas);
 		
 		document.body.appendChild(this._PLAY_BUTTON);
@@ -250,6 +317,10 @@ _p.toggleFullScreenCanvas = function() {
 		this.canvas.style.position = "";
 		this.canvas.style.top = "";
 		this.canvas.style.left = "";
+		this.canvas.style.zIndex = "";
+		this._PLAY_BUTTON.style.zIndex = "";
+		this._STOP_BUTTON.style.zIndex = "";
+		this._FULLSCREEN_BUTTON.style.zIndex = "";
 		gameSection.appendChild(this.canvas);
 		
 		gameSection.appendChild(this._PLAY_BUTTON);
@@ -275,13 +346,6 @@ _p.initFullContainerCanvas = function(canvasId) {
 * si modifica dimensiunile canvas-ului astfel incat sa se adapteze
 * la container sau la dimensiunea ecranului(in modul fullscreen)*/
 _p.resizeCanvas = function() {
-	function viewportSize() {
-		return {
-			width : Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
-			height : Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-		};
-	}
-	
 	var new_size = (this._FULLSCREEN_CANVAS)
 		? viewportSize() : 
 		{
@@ -289,11 +353,29 @@ _p.resizeCanvas = function() {
 			height : this.canvas.parentElement.clientHeight * 0.85
 		};
 	
+	//pastrez vechea dimensiune a canvasului pentru o repozitionare corecta
+	//a caracterului pe ecran dupa resize 
+	this.canvas._oldWidth = this.canvas.width;
+	this.canvas._oldHeight = this.canvas.height;
+	
 	this.canvas.width = new_size.width;
 	this.canvas.height = new_size.height;
 	
-	repaintCanvas(this.canvas);
+	if (this.game.character)
+		this.game.character.repositionAfterCanvasResize();
+	
+	this.repaintCanvas();
 };
+
+_p.repaintCanvas = function() {
+	var ctx = this.canvas.getContext("2d");
+	
+	ctx.fillStyle = "white";
+	ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+	
+	if (this.game.character)
+		this.game.character.drawCharacter();
+}
 
 _p.handlePlayButtonPress = function() {
 	this._PLAY_BUTTON.style.display = "none";

@@ -30,7 +30,7 @@ _p.requestPropagation = function() {
 */
 _p.allowDomDefaultOnChildern = function(querySelectors) {
 	var children = [], 
-		events = (isTouchDevice())? ["touchend", "touchstart", "touchmove"] : ["mouseup", "mousedown", "mousemove"];
+		events = (isTouchDevice())? ["touchstart", "touchmove"] : ["mousedown", "mousemove"];
 	
 	for (var selector of querySelectors) {
 		var results = Array.from(this._element.querySelectorAll(selector));

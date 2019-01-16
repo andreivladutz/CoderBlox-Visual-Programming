@@ -1,16 +1,19 @@
 const GAME_START_EVENT = "gamestart",
 	  GAME_STOP_EVENT = "gamestop";
 
-const CHARACTER_NAMES = ["John", "Johnny"];
+const CHARACTER_NAMES = ["John", "Johnny"],
+	  DEFAULT_CHARACTER_NAME = "Johnny",
+	  DOM_HEAD_IMG_ID = "chara-head",
+	  MAIN_CANVAS_ID = "mainCanvas";
 
 var CHARACTERS = {
 	  "John" : {
-		  "headImage" : "media/APP/charas/John-head.png/",
+		  "headImage" : "media/APP/charas/John-head.png",
 		  //aici va fi obiectul img al sprite-ului dupa ce s-a incarcat
 		  "spriteResource" : null
 	  },
 	  "Johnny" : {
-		  "headImage" : "media/APP/charas/Johnny-head.png/",
+		  "headImage" : "media/APP/charas/Johnny-head.png",
 		  "spriteResource" : null
 	  }
   };
@@ -23,6 +26,8 @@ class Game extends EventEmiter {
 		
 		this.gui = new GameUI(this);
 		this.resLoad = this._loadResources();
+		this.character = null;
+		this.selectedCharaName = this._loadSelectedCharacter();
 		
 		this.running = false;
 		
@@ -45,7 +50,6 @@ _p._loadResources = function() {
 	var resLoad = new ResourceLoader(),
 		self = this;
 	
-	resLoad.addEventListener("loadedJohnny", function(e) { drawChara(e.detail); });
 	resLoad.addEventListener("loadedCodeBlocksXML", function(e) { self.gui.insertCodeBlocks(e.detail.responseXML); });
 	resLoad.addEventListener("loadedCodeBlocksXML", this._boxCodeBlocks);
 	resLoad.addEventListener("loadedCompatibilityJSON", this._setCodeBlocksCompatibility);
@@ -74,8 +78,36 @@ _p._loadResources = function() {
 }
 
 _p._onLoadedCharacters = function() {
-	console.log("LOADED CHARACTERS");
-	console.log(CHARACTERS);
+	this.character = new Character(
+		this, 
+		document.getElementById(MAIN_CANVAS_ID),
+		this.selectedCharaName, 
+		document.getElementById(DOM_HEAD_IMG_ID)
+	);
+}
+
+//cand apas butonul de schimbat caracterul => 
+//trec la urmatorul caracter in lista de nume de caractere
+_p.changeCharacter = function() {
+	var ind = CHARACTER_NAMES.indexOf(this.selectedCharaName);
+	
+	this.character.switchCharacter(
+		(this.selectedCharaName = CHARACTER_NAMES[++ind % 2])
+	);
+	
+	this.character.drawCharacter();
+}
+
+//daca nu am salvat deja caracterul intr-o alta 
+//sesiune atunci returnez caracterul default
+_p._loadSelectedCharacter = function() {
+	var characterName = localStorage.getItem(SELECTED_CHARACTER_KEY);
+	
+	return (characterName)? characterName : DEFAULT_CHARACTER_NAME;
+}
+
+_p._saveSelectedCharacter = function() {
+	localStorage.setItem(SELECTED_CHARACTER_KEY, this.selectedCharaName);
 }
 
 /*
@@ -125,6 +157,10 @@ _p.startDebuggingDragAndDrop = function() {
 	this.DEBUGGING_DRAG_AND_DROP = true;
 }
 
+_p.getAnimationFPS = function() {
+	return parseInt(this.gui.rangeElement.value);
+}
+
 _p._startGame = function() {
 	if (this.running) return;
 	
@@ -136,7 +172,7 @@ _p._startGame = function() {
 	}
 	
 	//astept sa se termine toate blocurile de cod de rulat
-	Promise.all(this.finishGamePromises).then(this._stopGame.bind(this));
+	//Promise.all(this.finishGamePromises).then(this.emit.bind(this, GAME_STOP_EVENT, null));
 }
 
 _p._stopGame = function() {

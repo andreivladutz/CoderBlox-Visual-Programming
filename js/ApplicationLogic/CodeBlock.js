@@ -533,12 +533,12 @@ _p._printDetailsOnDebugging = function(e) {
 		below : blocksUnderDrag.below? blocksUnderDrag.below.blockType : null
 	}
 	
-	LOGGER.log("DOM ELEMENTS UNDER DRAG:");
-	LOGGER.log(elUnderDrag);
+	console.log("DOM ELEMENTS UNDER DRAG:");
+	console.log(elUnderDrag);
 	
-	LOGGER.log("CODE BLOCKS UNDER DRAG:");
-	LOGGER.log(blocksUnderDrag);
+	console.log("CODE BLOCKS UNDER DRAG:");
+	console.log(blocksUnderDrag);
 	
-	LOGGER.log("CODE BLOCKS NAMES UNDER DRAG:");
-	LOGGER.log(blocksNames);
+	console.log("CODE BLOCKS NAMES UNDER DRAG:");
+	console.log(blocksNames);
 }

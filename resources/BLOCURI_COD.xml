@@ -61,20 +61,20 @@
 		<div class = "code_block action direction">
 			<span class = "code_statement">Uita-te in</span>
 			<select class = "direction" name = "direction">
-				<option value = "stanga">stanga</option>
-				<option value = "dreapta">dreapta</option>
-				<option value = "sus">sus</option>
-				<option value = "jos">jos</option>
+				<option value = "left">stanga</option>
+				<option value = "right">dreapta</option>
+				<option value = "up">sus</option>
+				<option value = "down">jos</option>
 			</select>
 		</div>
 
 		<div class = "code_block action movement">
 			<span class = "code_statement">Mergi spre</span>
 			<select class = "direction"  name = "direction">
-				<option value = "stanga">stanga</option>
-				<option value = "dreapta">dreapta</option>
-				<option value = "sus">sus</option>
-				<option value = "jos">jos</option>
+				<option value = "left">stanga</option>
+				<option value = "right">dreapta</option>
+				<option value = "up">sus</option>
+				<option value = "down">jos</option>
 			</select>
 			<input class = "no_steps" type = "number" min = "0" max = "1000" value = "10"/>
 			<span class = "code_statement">pasi</span>

@@ -184,15 +184,22 @@ class DirectionAction extends ActionNode {
 	
 	execute() {
 		this.game.emit("look", {
+			blockNode : this,
 			direction : this.direction
 		});
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
 			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			LOGGER.log("LOOKING " + this.direction);
+			
+			var self = this;
+			this.on(NODE_EXECUTED_EVENT, function listener() {
+				LOGGER.log("IN CODE CHAIN NO " + self._indexOfCodeChain + ":");
+				LOGGER.log("FINISHED LOOKING " + self.direction);
+				
+				this.removeEventListener(NODE_EXECUTED_EVENT, listener);
+			});
 		}
-		
-		super.execute();
 	}
 };
 
@@ -216,6 +223,7 @@ class MovementAction extends ActionNode {
 	
 	execute() {
 		this.game.emit("move", {
+			blockNode : this,
 			direction : this.direction,
 			noOfSteps : this.noOfSteps
 		});
@@ -223,11 +231,15 @@ class MovementAction extends ActionNode {
 		if (this.game.DEBUGGING_CODE_CHAIN) {
 			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			LOGGER.log("MOVING " +  this.direction + " a number of " + this.noOfSteps + " steps");
+			
+			var self = this;
+			this.on(NODE_EXECUTED_EVENT, function listener() {
+				LOGGER.log("IN CODE CHAIN NO " + self._indexOfCodeChain + ":");
+				LOGGER.log("FINISHED MOVING");
+				
+				this.removeEventListener(NODE_EXECUTED_EVENT, listener);
+			});
 		}
-		
-		setTimeout(function(self) {
-			self.emit(NODE_EXECUTED_EVENT, null);
-		}, 2000, this);
 	}
 };
 
@@ -245,12 +257,21 @@ class TalkingAction extends ActionNode {
 	
 	execute() {
 		this.game.emit("talk", {
+			blockNode : this,
 			speech : this.speech
 		});
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
 			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");
 			LOGGER.log("SAYING " + this.speech);
+			
+			var self = this;
+			this.on(NODE_EXECUTED_EVENT, function listener() {
+				LOGGER.log("IN CODE CHAIN NO " + self._indexOfCodeChain + ":");
+				LOGGER.log("FINISHED SAYING " + self.speech);
+				
+				this.removeEventListener(NODE_EXECUTED_EVENT, listener);
+			});
 		}
 
 		super.execute();
@@ -405,20 +426,57 @@ class Expression extends CodeBlockTreeNode {
 		if (this.leftOperandString === "left-border")
 			this.leftOperand = 0;
 		else if (this.leftOperandString === "right-border")
-			this.leftOperand = 100;
+			this.leftOperand = this.game.gui.canvas.width;
 		else if (this.leftOperandString === "top-border")
 			this.leftOperand = 0;
 		else if (this.leftOperandString === "bottom-border")
-			this.leftOperand = 100;
+			this.leftOperand = this.game.gui.canvas.height;
+		else if (this.leftOperandString === "posX")
+			this.leftOperand = this.game.character.x;
+		else if (this.leftOperandString === "posY")
+			this.leftOperand = this.game.character.y;
 		
 		if (this.rightOperandString === "left-border")
 			this.rightOperand = 0;
 		else if (this.rightOperandString === "right-border")
-			this.rightOperand = 100;
+			this.rightOperand = this.game.gui.canvas.width;
 		else if (this.rightOperandString === "top-border")
 			this.rightOperand = 0;
 		else if (this.rightOperandString === "bottom-border")
-			this.rightOperand = 100;
+			this.rightOperand = this.game.gui.canvas.height;
+		else if (this.leftOperandString === "posX")
+			this.rightOperand = this.game.character.x;
+		else if (this.leftOperandString === "posY")
+			this.rightOperand = this.game.character.y;
+		
+		//cazuri speciale cand compar poX si posY cu border (pentru a preveni caracterul sa iasa din ecran)
+		if (this.leftOperandString === "posX") {
+			if (this.rightOperandString === "left-border")
+				this.leftOperand = this.game.character.getXRelativeToLeftBorder();
+			if (this.rightOperandString === "right-border")
+				this.leftOperand = this.game.character.getXRelativeToRightBorder();
+		}
+		
+		if (this.rightOperandString === "posX") {
+			if (this.leftOperandString === "left-border")
+				this.rightOperand = this.game.character.getXRelativeToLeftBorder();
+			if (this.leftOperandString === "right-border")
+				this.rightOperand = this.game.character.getXRelativeToRightBorder();
+		}
+		
+		if (this.leftOperandString === "posY") {
+			if (this.rightOperandString === "top-border")
+				this.leftOperand = this.game.character.getYRelativeToTopBorder();
+			if (this.rightOperandString === "bottom-border")
+				this.leftOperand = this.game.character.getYRelativeToBottomBorder();
+		}
+		
+		if (this.rightOperandString === "posY") {
+			if (this.leftOperandString === "top-border")
+				this.rightOperand = this.game.character.getYRelativeToTopBorder();
+			if (this.leftOperandString === "bottom-border")
+				this.rightOperand = this.game.character.getYRelativeToBottomBorder();
+		}
 		
 		if (this.game.DEBUGGING_CODE_CHAIN) {
 			LOGGER.log("IN CODE CHAIN NO " + this._indexOfCodeChain + ":");

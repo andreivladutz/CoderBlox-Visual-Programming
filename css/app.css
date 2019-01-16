@@ -10,7 +10,7 @@ html, body {
 	-ms-user-select: none;
 	user-select: none;
 	
-	overflow : none;
+	overflow : hidden;
 }
 
 /*STIL MENIU*/
@@ -37,6 +37,26 @@ ul {
 /*primul bloc de cod nu mai este offset-uit*/
 #menu>ul>li>ul>li:first-child {
 	margin-top : 0;
+}
+
+/*
+	fix ce nu mai lasa actiunea de movement
+	sa iasa din meniu si sa creeze probleme
+*/
+#menu>ul>li>#actions_list {
+	width : 100%;
+}
+
+#actions_list>li {
+	width : 100%;
+}
+
+#actions_list>li:nth-of-type(2) .action {
+	width : 12.5rem;
+}
+
+#actions_list>li:nth-of-type(2) .action>input {
+	width : 2.5rem;
 }
 
 /*meniul la randul lui va fi grid*/
@@ -224,6 +244,10 @@ ul {
 	height : auto;
 	
 	cursor : pointer;
+}
+
+#added-characters>li #chara-head {
+	cursor : default;
 }
 
 /*stil FOOTER */
