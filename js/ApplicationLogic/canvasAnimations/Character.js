@@ -41,6 +41,9 @@ class Character {
 		this.y = 0;
 		
 		this.moving = false;
+		this.talking = false;
+		this.currentText = "";
+		this.clearTextTimeoutId = null;
 		
 		this.direction = LOOKING_DOWN;
 		this.currentFrame = STANDSTILL_POSITION;
@@ -134,6 +137,9 @@ _p.drawCharacter = function() {
 	this.ctx.fillStyle = "white";
 	this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 	this.spriteSheetManager.drawFrame(this.x, this.y, this.direction, this.currentFrame);
+	
+	if (this.talking)
+		this.say();
 }
 
 /*
@@ -145,7 +151,7 @@ _p.drawCharacter = function() {
 */
 _p.moveSteps = function(noOfSteps, blockNode) {
 	function updateFrame(currentFrame) {
-		this.currentFrame = currentFrame;;
+		this.currentFrame = currentFrame;
 	}
 	
 	var updatePosition,
@@ -155,7 +161,7 @@ _p.moveSteps = function(noOfSteps, blockNode) {
 	
 	if (this.direction === LOOKING_RIGHT || this.direction === LOOKING_LEFT) {
 		updatePosition = function(currentX) {
-			this.x = currentX;;
+			this.x = currentX;
 		}
 		
 		startCoordinate = this.x;
@@ -168,7 +174,7 @@ _p.moveSteps = function(noOfSteps, blockNode) {
 	}
 	else if (this.direction === LOOKING_DOWN || this.direction === LOOKING_UP) {
 		updatePosition = function(currentY) {
-			this.y = currentY;;
+			this.y = currentY;
 		}
 		
 		startCoordinate = this.y;
@@ -226,6 +232,114 @@ _p.changeDirection = function(newDirection, blockNode) {
 	if (blockNode)
 		blockNode.emit(NODE_EXECUTED_EVENT, null);
 } 
+
+_p.say = function(text = this.currentText) {	
+	if (!text)
+		return;
+	
+	//creez un dummy div pentru a verifica cat ocupa textul
+	var dummyDiv = document.createElement("div");
+	
+	dummyDiv.innerHTML = text;
+	dummyDiv.style.visibility = "hidden";
+	dummyDiv.style.position = "absolute";
+	dummyDiv.style.fontSize = "1em";
+	dummyDiv.style.fontFamily = "Code";
+	
+	document.body.appendChild(dummyDiv);
+	
+	var style = window.getComputedStyle(dummyDiv),
+		textWidth = parseInt(style.width),
+		textHeight = parseInt(style.height);
+	
+	dummyDiv.innerHTML = "W";
+	style = window.getComputedStyle(dummyDiv);
+	var oneLetterWidth = parseInt(style.width),
+		oneLetterHeight = parseInt(style.height);
+	
+	document.body.removeChild(dummyDiv);
+	
+	var onTheRightX = this.x + this.spriteSheetManager.anchorX - 10,
+		onTheLeftX = this.x - this.spriteSheetManager.anchorX + 10,
+		y = this.y - this.spriteSheetManager.anchorY + 10,
+		outOfCanvasY = textHeight + oneLetterHeight + 3;
+	
+	y = Math.max(y, outOfCanvasY);
+	
+	//textboxul ramane in canvas pana trece de y-ul caracterului
+	//dupa care urca odata cu caracterul(daca acesta iese din ecran)
+	if (y >= this.y - 10)
+		y = this.y - 10;
+	
+	var rightDelta = this.canvas.width - (onTheRightX + textWidth + oneLetterWidth),
+		leftDelta = onTheLeftX - (textWidth + oneLetterWidth),
+		howMuchExitsRight = (rightDelta < 0)? Math.abs(rightDelta) : 0,
+		howMuchExitsLeft = (leftDelta < 0)? Math.abs(leftDelta) : 0;
+	
+	//textul intra mai bine in partea dreapta
+	if (howMuchExitsRight <= howMuchExitsLeft)
+		this.drawTextBoxOnTheRight(text, onTheRightX, y, textWidth, textHeight, oneLetterWidth, oneLetterHeight);
+	else 
+		this.drawTextOnTheLeft(text, onTheLeftX, y, textWidth, textHeight, oneLetterWidth, oneLetterHeight);
+}
+
+_p.drawTextBoxOnTheRight = function(text, x, y, textWidth, textHeight, oneLetterWidth, oneLetterHeight) {
+	this.ctx.font = "1em Code";
+	this.ctx.fillStyle = "black";
+	this.ctx.fillText(text, x + oneLetterWidth / 2, y - oneLetterHeight / 2);
+	
+	this.ctx.lineJoin = "round";
+	this.ctx.lineWidth = 3;
+	
+	this.ctx.strokeRect(x, y, textWidth + oneLetterWidth, -textHeight - oneLetterHeight);
+	
+	this.ctx.beginPath();
+	this.ctx.strokeStyle = "white";
+	this.ctx.moveTo(x + oneLetterWidth - 1, y);
+	this.ctx.lineTo(x + 2, y);
+	this.ctx.lineWidth = 4;
+	this.ctx.stroke();
+	this.ctx.closePath();
+	
+	this.ctx.beginPath();
+	this.ctx.lineWidth = 3;
+	this.ctx.strokeStyle = "black";
+	this.ctx.moveTo(x, y);
+	this.ctx.lineTo(x - 3, y + 10);
+
+	this.ctx.lineTo(x + oneLetterWidth, y);
+	this.ctx.stroke();
+	this.ctx.closePath();
+}
+
+_p.drawTextOnTheLeft = function(text, x, y, textWidth, textHeight, oneLetterWidth, oneLetterHeight) {
+	this.ctx.font = "1em Code";
+	this.ctx.fillStyle = "black";
+	this.ctx.fillText(text, (x - textWidth - oneLetterWidth) + oneLetterWidth / 2, y - oneLetterHeight / 2);
+	
+	this.ctx.lineJoin = "round";
+	this.ctx.lineWidth = 3;
+	
+	this.ctx.strokeRect(x, y, -textWidth - oneLetterWidth, -textHeight - oneLetterHeight);
+	
+	this.ctx.beginPath();
+	this.ctx.strokeStyle = "white";
+	this.ctx.moveTo(x - 2, y);
+	this.ctx.lineTo(x - oneLetterWidth + 1, y);
+	this.ctx.lineWidth = 4;
+	this.ctx.stroke();
+	this.ctx.closePath();
+	
+	this.ctx.beginPath();
+	this.ctx.lineWidth = 3;
+	this.ctx.strokeStyle = "black";
+	this.ctx.moveTo(x, y);
+	this.ctx.lineTo(x + 3, y + 10);
+
+	this.ctx.lineTo(x - oneLetterWidth, y);
+	this.ctx.stroke();
+	this.ctx.closePath();
+}
 
 _p.scheduleAction = function(typeofAction, event) {
 	this.actionsToExecute.push({
@@ -296,7 +410,26 @@ _p.update = function() {
 			}
 		}
 		else if (action.typeofAction === "talk") {
+			//daca nu am terminat de "zis" ce ziceam inainte
+			//anulez timeout-ul vechi ce oprea vorbirea si doar suprascriu ce zic acum
+			if (this.talking) {
+				clearTimeout(this.clearTextTimeoutId);
+			}
 			
+			this.talking = true;
+			this.currentText = detail.speech;
+			
+			//setez un timeout ce clear-uieste currentText si seteaza this.talking pe fals
+			this.clearTextTimeoutId = setTimeout(
+				function(self) {
+					self.talking = false;
+					self.currentText = "";
+				},
+				2000,
+				this
+			);
+			
+			detail.blockNode.emit(NODE_EXECUTED_EVENT, null);
 		}
 	}
 	

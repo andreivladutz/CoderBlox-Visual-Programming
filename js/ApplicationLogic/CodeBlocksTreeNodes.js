@@ -273,8 +273,6 @@ class TalkingAction extends ActionNode {
 				this.removeEventListener(NODE_EXECUTED_EVENT, listener);
 			});
 		}
-
-		super.execute();
 	}
 };
 

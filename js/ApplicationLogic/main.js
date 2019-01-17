@@ -33,5 +33,4 @@ function init() {
 	GAME_REFERENCE = new Game();
 	GAME_REFERENCE.startDebuggingCodeChain();
 	//GAME_REFERENCE.startDebuggingDragAndDrop();
-	
 }

@@ -82,7 +82,7 @@
 
 		<div class = "code_block action talking">
 			<span class = "code_statement">Spune</span>
-			<input class = "speech" type = "text" maxlength = "1000" value = "Saloot!"/>
+			<input class = "speech" type = "text" maxlength = "15" value = "Saloot!"/>
 		</div>
 	</action>
 
