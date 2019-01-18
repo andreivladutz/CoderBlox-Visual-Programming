@@ -306,9 +306,10 @@ _p._makeElementUnmovable = function(e, howToInsert, element) {
 }
 
 _p._dropDOMWrapperToDroppableZone = function(e) {
-	var dropRect = CodeBlock.DROPPABLE_ZONE.getBoundingClientRect(),
-		top = e.detail.y - dropRect.top - this._initialPointerOffset.y,
-		left = e.detail.x - dropRect.left - this._initialPointerOffset.x;
+	var dZ = CodeBlock.DROPPABLE_ZONE, 
+		dropRect = dZ.getBoundingClientRect(),
+		top = e.detail.y - dropRect.top + dZ.scrollTop - this._initialPointerOffset.y,
+		left = e.detail.x - dropRect.left + dZ.scrollLeft - this._initialPointerOffset.x;
 	
 	this.DOMWrapper.style.position = "absolute";
 	
