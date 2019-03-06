@@ -29,7 +29,7 @@ const RESOURCES = [
 
 var GAME_REFERENCE, LOGGER;
 
-function init() {
+window.onload = function init() {
 	GAME_REFERENCE = new Game();
 	GAME_REFERENCE.startDebuggingCodeChain();
 	//GAME_REFERENCE.startDebuggingDragAndDrop();
